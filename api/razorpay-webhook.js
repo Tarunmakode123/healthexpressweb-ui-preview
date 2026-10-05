@@ -1,26 +1,10 @@
 import crypto from 'crypto';
-import { createClient } from '@supabase/supabase-js';
-
-/**
- * Helper: Instantiate Server-Side Supabase Client with SUPABASE_SERVICE_ROLE_KEY
- * NEVER EXPOSE SERVICE ROLE KEY TO BROWSER CLIENTS
- */
-function getServiceRoleSupabase() {
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-
-  if (url && serviceKey) {
-    return createClient(url, serviceKey, {
-      auth: { persistSession: false }
-    });
-  }
-  return null;
-}
+import { supabase, isSupabaseConfigured } from '../src/lib/supabase.js';
 
 /**
  * SERVER-SIDE ONLY ENDPOINT: Razorpay Webhook Endpoint (/api/payments/webhook)
  * 1. Verifies X-Razorpay-Signature using RAZORPAY_WEBHOOK_SECRET
- * 2. Idempotently updates order & payment status in Supabase database using Service-Role client
+ * 2. Idempotently updates order & payment status in Supabase database
  */
 export async function handleRazorpayWebhook(rawBodyText, signatureHeader) {
   const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
@@ -68,14 +52,12 @@ export async function handleRazorpayWebhook(rawBodyText, signatureHeader) {
     return { status: 200, body: { status: 'Ignored (No order_id in event)' } };
   }
 
-  // 3. Process Events Idempotently via Service-Role Client
-  const serviceRoleSupabase = getServiceRoleSupabase();
-
+  // 3. Process Events Idempotently
   if (event === 'payment.captured' || event === 'order.paid') {
-    if (serviceRoleSupabase) {
+    if (isSupabaseConfigured) {
       try {
         // Find matching payment record
-        const { data: payments } = await serviceRoleSupabase
+        const { data: payments } = await supabase
           .from('payments')
           .select('order_id, payment_status')
           .eq('razorpay_order_id', razorpayOrderId)
@@ -89,8 +71,8 @@ export async function handleRazorpayWebhook(rawBodyText, signatureHeader) {
             return { status: 200, body: { status: 'OK (Already processed idempotently)' } };
           }
 
-          // Execute RPC using privileged Service-Role Supabase Client
-          await serviceRoleSupabase.rpc('verify_and_confirm_order_payment', {
+          // Execute RPC to verify and confirm payment
+          await supabase.rpc('verify_and_confirm_order_payment', {
             p_order_id: targetOrderId,
             p_razorpay_order_id: razorpayOrderId,
             p_razorpay_payment_id: razorpayPaymentId,
@@ -100,27 +82,28 @@ export async function handleRazorpayWebhook(rawBodyText, signatureHeader) {
           });
         }
       } catch (dbErr) {
-        console.error('Webhook database update error via service-role:', dbErr);
+        console.error('Webhook database update error:', dbErr);
         return { status: 500, body: { error: 'Failed to update database via webhook.' } };
       }
     }
   } else if (event === 'payment.failed') {
-    if (serviceRoleSupabase) {
+    if (isSupabaseConfigured) {
       try {
-        const { data: payments } = await serviceRoleSupabase
+        const { data: payments } = await supabase
           .from('payments')
           .select('order_id, payment_status')
           .eq('razorpay_order_id', razorpayOrderId)
           .limit(1);
 
         if (payments && payments.length > 0) {
+          // Idempotent Safeguard: Do not downgrade an already PAID order/payment to FAILED
           if (payments[0].payment_status === 'PAID') {
             return { status: 200, body: { status: 'Ignored payment.failed because payment is already PAID' } };
           }
           const targetOrderId = payments[0].order_id;
           const failureReason = paymentEntity?.error_description || 'Payment failed.';
 
-          await serviceRoleSupabase
+          await supabase
             .from('payments')
             .update({
               payment_status: 'FAILED',
@@ -129,7 +112,7 @@ export async function handleRazorpayWebhook(rawBodyText, signatureHeader) {
             })
             .eq('razorpay_order_id', razorpayOrderId);
 
-          await serviceRoleSupabase
+          await supabase
             .from('orders')
             .update({
               payment_status: 'FAILED',
@@ -138,7 +121,7 @@ export async function handleRazorpayWebhook(rawBodyText, signatureHeader) {
             .eq('id', targetOrderId);
         }
       } catch (dbErr) {
-        console.error('Webhook failure handler error via service-role:', dbErr);
+        console.error('Webhook failure handler error:', dbErr);
       }
     }
   }
@@ -158,3 +141,4 @@ export default async function handler(req, res) {
   const result = await handleRazorpayWebhook(rawBody, signature);
   return res.status(result.status).json(result.body);
 }
+

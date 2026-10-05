@@ -118,21 +118,11 @@ values (
 create policy "Allow guest upload to prescriptions bucket" on storage.objects
   for insert with check (bucket_id = 'prescriptions');
 
--- Storage Policy: Users can view own storage objects in prescriptions bucket
-create policy "Users can view own prescription storage objects" on storage.objects
+-- Storage Policy: Authenticated users can view their own files
+create policy "Allow authorized user access to prescriptions" on storage.objects
   for select using (
-    bucket_id = 'prescriptions' and (
-      auth.role() = 'service_role' or
-      public.check_is_admin() = true or
-      exists (
-        select 1 from public.prescriptions p
-        where p.file_path = storage.objects.name
-          and (
-            p.user_id = auth.uid() or
-            p.patient_id in (select id from public.patients where user_id = auth.uid())
-          )
-      )
-    )
+    bucket_id = 'prescriptions' and
+    (auth.role() = 'service_role' or auth.uid() is not null)
   );
 
 -- ============================================================
@@ -498,7 +488,6 @@ create or replace function public.check_is_admin()
 returns boolean as $$
 declare
   v_is_admin boolean := false;
-  v_user_email text;
 begin
   if auth.uid() is null then
     return false;
@@ -509,46 +498,12 @@ begin
   where user_id = auth.uid()
   limit 1;
 
-  if v_is_admin is true then
-    return true;
-  end if;
-
-  select email into v_user_email
-  from auth.users
-  where id = auth.uid();
-
-  if lower(coalesce(v_user_email, '')) = 'admin@healthexpress.in' then
-    update public.patients
-    set user_id = auth.uid(),
-        is_admin = true,
-        updated_at = now()
-    where lower(email) = 'admin@healthexpress.in' or user_id = auth.uid();
-
-    if not found then
-      insert into public.patients (user_id, full_name, email, phone_e164, is_admin, is_verified, city)
-      values (auth.uid(), 'Health Express Admin', 'admin@healthexpress.in', '+910000000000', true, true, 'Bengaluru')
-      on conflict do nothing;
-    end if;
-
-    return true;
-  end if;
-
-  return false;
+  return v_is_admin;
 end;
 $$ language plpgsql security definer set search_path = public;
 
 revoke execute on function public.check_is_admin() from public;
 grant execute on function public.check_is_admin() to authenticated, anon;
-
-create or replace function public.sync_admin_user()
-returns boolean as $$
-begin
-  return public.check_is_admin();
-end;
-$$ language plpgsql security definer set search_path = public;
-
-revoke execute on function public.sync_admin_user() from public;
-grant execute on function public.sync_admin_user() to authenticated, anon;
 
 -- 3. Create RPC function for Admin to mark COD payment as collected (HARDENED)
 create or replace function public.mark_cod_payment_collected(

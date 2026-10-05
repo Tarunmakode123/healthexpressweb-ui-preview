@@ -1,19 +1,15 @@
 import React from 'react';
 import HeroSection from '../components/sections/HeroSection';
-import WhyChooseHealthExpress from '../components/sections/WhyChooseHealthExpress';
-import ProblemSection from '../components/sections/ProblemSection';
+import NewServicesSection from '../components/sections/NewServicesSection';
+import Newwhychooseus from '../components/sections/Newwhychooseus';
+import Newsectionvideoabout from '../components/sections/Newsectionvideoabout';
 import HowItWorksSection from '../components/sections/HowItWorksSection';
-import ServicesSection from '../components/sections/ServicesSection';
-import PreventiveHealthSection from '../components/sections/PreventiveHealthSection';
-import QuickHealthChecks from '../components/health-checks/QuickHealthChecks';
-import WhyHealthExpressSection from '../components/sections/WhyHealthExpressSection';
-import PopularTestsSection from '../components/sections/PopularTestsSection';
-import CalculatorsCarouselSection from '../components/sections/CalculatorsCarouselSection';
-import TrustSection from '../components/sections/TrustSection';
+import Sixpointsection from '../components/sections/Sixpointsection';
 import HealthRecordsSection from '../components/sections/HealthRecordsSection';
-import CitiesSection from '../components/sections/CitiesSection';
+import Newreviewsection from '../components/sections/Newreviewsection';
+import Newfaqsection from '../components/sections/Newfaqsection';
 import HealthLibrarySection from '../components/sections/HealthLibrarySection';
-import FAQSection from '../components/sections/FAQSection';
+import Homecontactsection from '../components/sections/Homecontactsection';
 import StickyMobileCTA from '../components/layout/StickyMobileCTA';
 
 export default function HomePage({ onOpenUploadModal, onOpenCalculatorModal }) {
@@ -22,44 +18,57 @@ export default function HomePage({ onOpenUploadModal, onOpenCalculatorModal }) {
       {/* 1. WHO ARE YOU? -> Hero */}
       <HeroSection onOpenUploadModal={onOpenUploadModal} />
 
-      {/* WHY CHOOSE HEALTH EXPRESS -> 6 Visual Icon Highlights */}
-      <WhyChooseHealthExpress />
+       {/* 1. WHO ARE YOU? -> Hero */}
+      <NewServicesSection />
 
-      {/* 2. WHY DO I NEED YOU? -> Problem */}
-      <ProblemSection />
+       {/* 1. WHO ARE YOU? -> Hero */}
+      <Newwhychooseus />
+
+      {/* 1. WHO ARE YOU? -> Hero */}
+      <Newsectionvideoabout />
+
 
       {/* WHAT HEALTH EXPRESS DOES & PATIENT JOURNEY -> One Connected Platform & 4-Step Journey */}
       <HowItWorksSection onOpenUploadModal={onOpenUploadModal} />
 
-      {/* PREVENTIVE HEALTH -> Reactive to Proactive */}
-      <PreventiveHealthSection />
 
-      {/* QUICK HEALTH CHECKS -> Interactive everyday health utilities */}
-      <QuickHealthChecks onOpenUploadModal={onOpenUploadModal} />
-
-      {/* POPULAR SERVICES -> High intent tests */}
-      <PopularTestsSection />
-
-      {/* FREE HEALTH CALCULATORS & CLINICAL TOOLS CAROUSEL */}
-      <CalculatorsCarouselSection onOpenCalculatorModal={onOpenCalculatorModal} />
-
-      {/* BUILT AROUND YOU -> Care Commitment & Benefits */}
-      <WhyHealthExpressSection />
+      {/* 1. WHO ARE YOU? -> Hero */}
+      <Sixpointsection />
+ 
+      
+ 
+  
 
       {/* HEALTH RECORDS AND REPORTS */}
       <HealthRecordsSection />
 
-      {/* 6. WHY TRUST YOU? -> Verified partners & Privacy */}
-      <TrustSection />
 
-      {/* LOCATION -> Starting with Bengaluru */}
-      <CitiesSection />
 
-      {/* HEALTH LIBRARY -> Evidence-informed guides */}
+{/* HEALTH RECORDS AND REPORTS */}
+      <Newreviewsection />
+
+
+
+
+
+      
+ {/* HEALTH RECORDS AND REPORTS */}
+      <Newfaqsection />
+
+      
+ 
+
+
+{/* HEALTH LIBRARY -> Evidence-informed guides */}
       <HealthLibrarySection />
 
-      {/* FAQ -> Frequently Asked Questions */}
-      <FAQSection />
+
+
+{/* HEALTH LIBRARY -> Evidence-informed guides */}
+      <Homecontactsection />
+
+
+
 
       {/* Floating Sticky Mobile WhatsApp CTA */}
       <StickyMobileCTA onOpenUploadModal={onOpenUploadModal} />
