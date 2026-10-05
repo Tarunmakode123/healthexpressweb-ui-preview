@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Sparkles, ArrowRight, Scale, Flame, Zap, Target, Activity, Droplet, 
-  HeartPulse, Calendar, Heart, Calculator 
+  HeartPulse, Calendar, Heart, ChevronLeft, ChevronRight, Calculator 
 } from 'lucide-react';
 import { CALCULATORS, CALCULATOR_CATEGORIES } from '../../data/calculators';
-import AutoCarousel from '../common/AutoCarousel';
 
 const iconMap = {
   Scale, Flame, Zap, Target, Activity, Droplet, HeartPulse, Calendar, Heart, Sparkles
@@ -13,16 +12,43 @@ const iconMap = {
 
 export default function CalculatorsCarouselSection({ onOpenCalculatorModal }) {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [isHovered, setIsHovered] = useState(false);
+  const scrollContainerRef = useRef(null);
 
   const filteredCalculators = activeCategory === 'all' 
     ? CALCULATORS 
     : CALCULATORS.filter(c => c.category === activeCategory);
+
+  // Auto-play interval loop with hover pause
+  useEffect(() => {
+    if (isHovered) return;
+
+    const interval = setInterval(() => {
+      if (scrollContainerRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+        if (scrollLeft + clientWidth >= scrollWidth - 25) {
+          scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          scrollContainerRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+        }
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isHovered]);
 
   const handleCardClick = (slug) => {
     if (onOpenCalculatorModal) {
       onOpenCalculatorModal(slug);
     } else {
       window.dispatchEvent(new CustomEvent('open-calculator-modal', { detail: { slug } }));
+    }
+  };
+
+  const handleScroll = (direction) => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = direction === 'left' ? -340 : 340;
+      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
@@ -58,6 +84,24 @@ export default function CalculatorsCarouselSection({ onOpenCalculatorModal }) {
               <span>Explore All Tools</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
+
+            {/* Slider Navigation Buttons */}
+            <div className="flex items-center gap-1.5">
+              <button 
+                onClick={() => handleScroll('left')}
+                className="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700 flex items-center justify-center transition-all shadow-2xs active:scale-95 cursor-pointer"
+                aria-label="Previous calculator"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={() => handleScroll('right')}
+                className="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700 flex items-center justify-center transition-all shadow-2xs active:scale-95 cursor-pointer"
+                aria-label="Next calculator"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -88,8 +132,16 @@ export default function CalculatorsCarouselSection({ onOpenCalculatorModal }) {
           ))}
         </div>
 
-        {/* Auto-Rotating Smooth Infinite Carousel */}
-        <AutoCarousel autoSlideInterval={5000}>
+        {/* Horizontal Slider Track with Auto-Play & Hover Pause */}
+        <div 
+          ref={scrollContainerRef}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onTouchStart={() => setIsHovered(true)}
+          onTouchEnd={() => setIsHovered(false)}
+          className="flex items-stretch gap-5 overflow-x-auto snap-x snap-mandatory py-2 px-1 scrollbar-none"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           {filteredCalculators.map((calc) => {
             const IconComponent = iconMap[calc.iconName] || Calculator;
 
@@ -97,7 +149,7 @@ export default function CalculatorsCarouselSection({ onOpenCalculatorModal }) {
               <div
                 key={calc.id}
                 onClick={() => handleCardClick(calc.slug)}
-                className="w-full bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-md shadow-slate-900/5 hover:border-purple-300 hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between text-left transform hover:-translate-y-1 relative overflow-hidden min-h-[260px] h-full"
+                className="w-[280px] sm:w-[320px] flex-shrink-0 snap-start bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-md shadow-slate-900/5 hover:border-purple-300 hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between text-left transform hover:-translate-y-1 relative overflow-hidden min-h-[260px]"
               >
                 <div className="space-y-4 flex-1 flex flex-col justify-between">
                   <div className="flex items-center justify-between">
@@ -129,7 +181,7 @@ export default function CalculatorsCarouselSection({ onOpenCalculatorModal }) {
               </div>
             );
           })}
-        </AutoCarousel>
+        </div>
 
       </div>
     </section>

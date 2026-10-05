@@ -16,26 +16,15 @@ export async function fetchCustomerHealthRecords() {
       return { success: true, data: [] };
     }
 
-    // Resolve associated patient profile ID
-    const { data: patient } = await supabase
-      .from('patients')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    const patientId = patient?.id || null;
-
-    // Query prescriptions table for records linked to user_id or patient_id
-    const query = supabase
+    // Query prescriptions table for records linked to user_id directly
+    const { data: prescriptions, error } = await supabase
       .from('prescriptions')
       .select(`
         *,
         enquiries(enquiry_code, status, created_at)
-      `);
-
-    const { data: prescriptions, error } = patientId
-      ? await query.or(`user_id.eq.${userId},patient_id.eq.${patientId}`).order('created_at', { ascending: false })
-      : await query.eq('user_id', userId).order('created_at', { ascending: false });
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Fetch customer health records DB error:', error.message);
@@ -90,24 +79,14 @@ export async function fetchCustomerPrescriptions() {
       return { success: true, data: [] };
     }
 
-    const { data: patient } = await supabase
-      .from('patients')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    const patientId = patient?.id || null;
-
-    const query = supabase
+    const { data: prescriptions, error } = await supabase
       .from('prescriptions')
       .select(`
         *,
         enquiries(enquiry_code, status, created_at)
-      `);
-
-    const { data: prescriptions, error } = patientId
-      ? await query.or(`user_id.eq.${userId},patient_id.eq.${patientId}`).order('created_at', { ascending: false })
-      : await query.eq('user_id', userId).order('created_at', { ascending: false });
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Fetch customer prescriptions DB error:', error.message);

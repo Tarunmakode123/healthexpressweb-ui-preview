@@ -1,14 +1,13 @@
 import { ALL_SERVICES } from '../data/services.js';
 import { DEMO_PROMO_CODES, calculateDiscountAmount } from './promoService.js';
 import { DEFAULT_WALLET_SETTINGS, calculateCoinDiscount } from './walletService.js';
-import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 
 /**
  * Validates cart items against canonical catalog data, evaluates optional promoCode & Health Coins server-side
  * with explicit scope eligibility matching, and recalculates trusted total payable amount.
  * PREVENTS CLIENT-SIDE PRICE, PROMO, AND COIN DISCOUNT TAMPERING
  */
-export async function validateCartTotal(items, promoCode = null, coinsToUse = 0, walletBalance = 0, walletSettings = DEFAULT_WALLET_SETTINGS) {
+export function validateCartTotal(items, promoCode = null, coinsToUse = 0, walletBalance = 1000, walletSettings = DEFAULT_WALLET_SETTINGS) {
   if (!items || !Array.isArray(items) || items.length === 0) {
     return {
       isValid: false,
@@ -31,35 +30,10 @@ export async function validateCartTotal(items, promoCode = null, coinsToUse = 0,
     const itemId = item.id || item.product_id || item.slug;
     const itemType = item.item_type || 'diagnostic_service';
 
-    let catalogService = null;
-
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { data: dbItem } = await supabase
-          .from('services')
-          .select('*')
-          .or(`slug.eq.${itemId},service_code.eq.${itemId}`)
-          .maybeSingle();
-
-        if (dbItem) {
-          catalogService = {
-            ...dbItem,
-            name: dbItem.service_name || dbItem.name,
-            discount_price: Number(dbItem.selling_price || dbItem.discount_price || dbItem.mrp || 299),
-            price: Number(dbItem.mrp || dbItem.price || 299),
-            category_name: dbItem.category_name || dbItem.category
-          };
-        }
-      } catch (e) {
-        // Fallback
-      }
-    }
-
-    if (!catalogService) {
-      catalogService = ALL_SERVICES.find(
-        (s) => s.id === itemId || s.slug === itemId || s.name === item.name
-      );
-    }
+    // Look up item in master services dataset
+    const catalogService = ALL_SERVICES.find(
+      (s) => s.id === itemId || s.slug === itemId || s.name === item.name
+    );
 
     let unitPrice = 0;
     let serviceName = item.name || 'Healthcare Service';
@@ -67,7 +41,7 @@ export async function validateCartTotal(items, promoCode = null, coinsToUse = 0,
 
     if (catalogService) {
       unitPrice = Number(catalogService.discount_price || catalogService.price || 299);
-      serviceName = catalogService.name || serviceName;
+      serviceName = catalogService.name;
       categoryName = catalogService.category_name || catalogService.category || categoryName;
     } else {
       const rawPrice = Number(item.price || item.unit_price || item.discount_price || 299);
@@ -103,34 +77,14 @@ export async function validateCartTotal(items, promoCode = null, coinsToUse = 0,
     };
   }
 
-  // 1. Server-side Promo Code Validation (Production-Ready Supabase Query)
+  // 1. Server-side Promo Code Validation
   let promoDiscount = 0;
   let promoCodeApplied = null;
   let promoError = null;
 
   if (promoCode && typeof promoCode === 'string' && promoCode.trim().length > 0) {
     const normalizedCode = promoCode.trim().toUpperCase();
-    let promo = null;
-
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { data: dbPromo, error: dbErr } = await supabase
-          .from('promo_codes')
-          .select('*')
-          .eq('code', normalizedCode)
-          .maybeSingle();
-
-        if (!dbErr && dbPromo) {
-          promo = dbPromo;
-        }
-      } catch (err) {
-        console.warn('validateCartTotal Supabase promo lookup exception:', err);
-      }
-    }
-
-    if (!promo && !isSupabaseConfigured) {
-      promo = DEMO_PROMO_CODES.find((p) => p.code.toUpperCase() === normalizedCode);
-    }
+    let promo = DEMO_PROMO_CODES.find((p) => p.code.toUpperCase() === normalizedCode);
 
     if (promo) {
       const now = new Date();
