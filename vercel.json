@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/api/auth/send-sms-hook", "destination": "/api/auth/send-sms-hook" },
     { "source": "/api/payments/webhook", "destination": "/api/razorpay-webhook" },
     { "source": "/api/create-razorpay-order", "destination": "/api/create-razorpay-order" },
     { "source": "/api/verify-razorpay-payment", "destination": "/api/verify-razorpay-payment" },

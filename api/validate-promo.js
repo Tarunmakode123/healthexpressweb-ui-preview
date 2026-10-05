@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     let calculatedSubtotal = Number(cartSubtotal || 0);
 
     if (cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
-      const cartValidation = validateCartTotal(cartItems);
+      const cartValidation = await validateCartTotal(cartItems);
       if (cartValidation.isValid) {
         calculatedSubtotal = cartValidation.verifiedSubtotal;
       }

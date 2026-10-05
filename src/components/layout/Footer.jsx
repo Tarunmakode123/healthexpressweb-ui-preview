@@ -162,9 +162,9 @@ export default function Footer({ onOpenUploadModal }) {
           <div className="flex flex-wrap gap-5">
             <Link to="/legal/privacy" className="hover:text-slate-300 transition-colors">Privacy Policy</Link>
             <Link to="/legal/terms" className="hover:text-slate-300 transition-colors">Terms & Conditions</Link>
-            <Link to="/legal/refund" className="hover:text-slate-300 transition-colors">Refund Policy</Link>
-            <Link to="/legal/cancellation" className="hover:text-slate-300 transition-colors">Cancellation Policy</Link>
-            <Link to="/legal/shipping" className="hover:text-slate-300 transition-colors">Shipping Policy</Link>
+            <Link to="/legal/cookies" className="hover:text-slate-300 transition-colors font-bold text-purple-300">Cookie Policy</Link>
+            <Link to="/legal/consent" className="hover:text-slate-300 transition-colors">Consent & Communications</Link>
+            <Link to="/legal/refund" className="hover:text-slate-300 transition-colors">Return, Refund, Shipping & Fees</Link>
           </div>
 
           <div className="flex items-center gap-1 text-slate-400 font-medium">

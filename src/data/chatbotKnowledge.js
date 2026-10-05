@@ -197,8 +197,8 @@ export const CHATBOT_KNOWLEDGE = {
     tagline: "Healthcare, without the hassle.",
     launchCity: "Bengaluru",
     softLaunchNotice: "Health Express is currently operating in its active pilot phase focused on Lab Diagnostics, Radiology, Genetics, Preventive Health, Home Nursing, and Surgical Coordination in Bengaluru.",
-    whatsappNumber: "+91 81234 14120",
-    whatsappLink: "https://wa.me/918123414120",
+    whatsappNumber: "+91 76765 58809",
+    whatsappLink: "https://wa.me/917676558809",
     email: "hello@healthexpress.care"
   },
   spec: HEX_SPECIFICATION,
