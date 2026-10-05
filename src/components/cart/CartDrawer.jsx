@@ -15,6 +15,7 @@ import {
   VITE_RAZORPAY_KEY_ID 
 } from '../../services/paymentService';
 import RazorpayDemoModal from '../common/RazorpayDemoModal';
+import AuthModal from '../common/AuthModal';
 
 export default function CartDrawer() {
   const { 
@@ -46,11 +47,12 @@ export default function CartDrawer() {
     finalPayable 
   } = useCart();
 
-  const { user } = useAuth();
+  const { user, session, isLoggedIn } = useAuth();
 
   const [promoInput, setPromoInput] = useState('');
   const [checkoutStep, setCheckoutStep] = useState('cart'); // 'cart' | 'checkout' | 'success'
   const [paymentMethodChoice, setPaymentMethodChoice] = useState('cod'); // 'cod' | 'online'
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   
   // Checkout Form State
   const [patientData, setPatientData] = useState({
@@ -67,6 +69,19 @@ export default function CartDrawer() {
   // Demo Payment Modal State
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const [pendingDemoOrder, setPendingDemoOrder] = useState(null);
+
+  const handleProceedToCheckout = () => {
+    if (session?.user || (isLoggedIn && user)) {
+      setCheckoutStep('checkout');
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  };
+
+  const handleAuthModalSuccess = () => {
+    setIsAuthModalOpen(false);
+    setCheckoutStep('checkout');
+  };
 
   // Sync patient name/phone from auth if available
   useEffect(() => {
@@ -128,6 +143,13 @@ export default function CartDrawer() {
     const coinsToUse = isCoinsApplied ? coinsRequested : 0;
 
     try {
+      // Defensive check: If paymentMethodChoice is 'online', block execution immediately
+      if (paymentMethodChoice === 'online') {
+        setErrorMessage('Online payment is temporarily unavailable. Please select Cash on Delivery.');
+        setIsProcessingPayment(false);
+        return;
+      }
+
       // ----------------------------------------------------
       // COD (CASH ON DELIVERY / PAY ON COLLECTION) FLOW
       // ----------------------------------------------------
@@ -356,19 +378,19 @@ export default function CartDrawer() {
           <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col justify-between border-l border-purple-100">
             
             {/* Header Bar */}
-            <div className="p-6 bg-gradient-to-r from-purple-900 to-slate-900 text-white flex items-center justify-between shadow-md">
+            <div className="py-3.5 px-5 bg-gradient-to-r from-purple-900 to-slate-900 text-white flex items-center justify-between shadow-md">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-purple-700/80 border border-purple-500/50 flex items-center justify-center text-white relative">
-                  <ShoppingBag className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-xl bg-purple-700/80 border border-purple-500/50 flex items-center justify-center text-white relative">
+                  <ShoppingBag className="w-4 h-4" />
                   {itemCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-emerald-500 text-slate-950 text-[10px] font-black flex items-center justify-center border-2 border-slate-900">
+                    <span className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full bg-emerald-500 text-slate-950 text-[10px] font-black flex items-center justify-center border-2 border-slate-900">
                       {itemCount}
                     </span>
                   )}
                 </div>
                 <div>
-                  <h3 className="text-lg font-extrabold text-white">Your Health Basket</h3>
-                  <p className="text-xs text-purple-200 font-medium">
+                  <h3 className="text-base font-extrabold text-white leading-tight">Your Health Basket</h3>
+                  <p className="text-[11px] text-purple-200 font-medium">
                     {itemCount === 0 ? 'Basket is empty' : `${itemCount} service${itemCount > 1 ? 's' : ''} selected`}
                   </p>
                 </div>
@@ -376,14 +398,14 @@ export default function CartDrawer() {
 
               <button
                 onClick={closeCart}
-                className="w-9 h-9 rounded-full bg-slate-800/80 hover:bg-purple-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-purple-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Drawer Body Area */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
               
               {errorMessage && (
                 <div className="bg-rose-50 border border-rose-200 p-3.5 rounded-2xl flex items-start gap-2 text-rose-900 text-xs font-semibold animate-in fade-in duration-200">
@@ -551,23 +573,19 @@ export default function CartDrawer() {
                       </div>
 
                       <div
-                        onClick={() => setPaymentMethodChoice('online')}
-                        className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between gap-1.5 ${
-                          paymentMethodChoice === 'online'
-                            ? 'bg-purple-50/90 border-purple-600 ring-2 ring-purple-600/30 text-purple-950'
-                            : 'bg-white border-slate-200 hover:border-purple-200 text-slate-700'
-                        }`}
+                        className="p-3.5 rounded-2xl border bg-slate-50/80 border-slate-200/80 text-slate-400 opacity-60 cursor-not-allowed select-none transition-all flex flex-col justify-between gap-1.5 relative overflow-hidden"
+                        title="Online payment is temporarily unavailable"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-extrabold flex items-center gap-1.5">
-                            <CreditCard className="w-4 h-4 text-purple-700" />
+                          <span className="text-xs font-extrabold flex items-center gap-1.5 text-slate-500">
+                            <CreditCard className="w-4 h-4 text-slate-400" />
                             <span>Pay Online</span>
                           </span>
-                          <span className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethodChoice === 'online' ? 'border-purple-700 bg-purple-700' : 'border-slate-300'}`}>
-                            {paymentMethodChoice === 'online' && <span className="w-1.5 h-1.5 rounded-full bg-white"></span>}
+                          <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200 text-[9px] font-black uppercase tracking-wider">
+                            Coming Soon
                           </span>
                         </div>
-                        <p className="text-[10px] text-slate-500 font-medium leading-tight">UPI, GPay, PhonePe, Cards, Net Banking</p>
+                        <p className="text-[10px] text-slate-400 font-medium leading-tight">Online payment will be available soon.</p>
                       </div>
                     </div>
                   </div>
@@ -582,7 +600,7 @@ export default function CartDrawer() {
                     {appliedPromo && promoDiscount > 0 && (
                       <div className="flex justify-between text-purple-900 font-extrabold">
                         <span>Promo Code ({appliedPromo.code})</span>
-                        <span>-₹{promoDiscount}</span>
+                        <span>-₹{typeof promoDiscount === 'number' ? promoDiscount : (promoDiscount?.discountAmount || 0)}</span>
                       </div>
                     )}
 
@@ -638,7 +656,7 @@ export default function CartDrawer() {
                 </form>
               ) : (
                 /* Cart Items List */
-                <div className="space-y-5">
+                <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs font-bold text-slate-500">
                     <span>SELECTED SERVICES ({cartItems.length})</span>
                     <button 
@@ -651,46 +669,46 @@ export default function CartDrawer() {
                   </div>
 
                   {/* Cart Items Cards */}
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {cartItems.map((item) => (
                       <div 
                         key={item.id}
-                        className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:border-purple-200 transition-all space-y-3 text-left"
+                        className="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:border-purple-200 transition-all space-y-2 text-left"
                       >
-                        <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start justify-between gap-2.5">
                           <div>
                             <span className="text-[10px] font-black uppercase text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100">
                               {item.category}
                             </span>
-                            <h4 className="text-sm font-extrabold text-slate-900 mt-1">{item.name}</h4>
+                            <h4 className="text-xs sm:text-sm font-bold text-slate-900 mt-0.5 leading-snug">{item.name}</h4>
                           </div>
                           <button
                             onClick={() => removeFromCart(item.id)}
-                            className="text-slate-400 hover:text-rose-600 p-1 transition-colors"
+                            className="text-slate-400 hover:text-rose-600 p-1 transition-colors shrink-0"
                           >
                             <X className="w-4 h-4" />
                           </button>
                         </div>
 
-                        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <div className="flex items-center justify-between pt-1.5 border-t border-slate-100">
                           <div className="flex items-center gap-2">
-                            <span className="text-base font-extrabold text-slate-900">₹{item.price * item.quantity}</span>
+                            <span className="text-sm font-extrabold text-slate-900">₹{item.price * item.quantity}</span>
                             {item.originalPrice > item.price && (
-                              <span className="text-xs text-slate-400 line-through">₹{item.originalPrice * item.quantity}</span>
+                              <span className="text-[11px] text-slate-400 line-through">₹{item.originalPrice * item.quantity}</span>
                             )}
                           </div>
 
-                          <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                          <div className="flex items-center gap-1.5 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
                             <button
                               onClick={() => updateQuantity(item.id, -1)}
-                              className="w-6 h-6 rounded-lg bg-white text-slate-700 font-bold flex items-center justify-center hover:bg-purple-100 transition-colors"
+                              className="w-5 h-5 rounded bg-white text-slate-700 font-bold flex items-center justify-center hover:bg-purple-100 transition-colors"
                             >
                               <Minus className="w-3 h-3" />
                             </button>
-                            <span className="text-xs font-black px-1.5">{item.quantity}</span>
+                            <span className="text-xs font-black px-1">{item.quantity}</span>
                             <button
                               onClick={() => updateQuantity(item.id, 1)}
-                              className="w-6 h-6 rounded-lg bg-white text-slate-700 font-bold flex items-center justify-center hover:bg-purple-100 transition-colors"
+                              className="w-5 h-5 rounded bg-white text-slate-700 font-bold flex items-center justify-center hover:bg-purple-100 transition-colors"
                             >
                               <Plus className="w-3 h-3" />
                             </button>
@@ -702,7 +720,7 @@ export default function CartDrawer() {
 
                   {/* 🪙 HEALTH EXPRESS COINS SECTION */}
                   {walletSettings?.redemption_enabled !== false && (
-                    <div className="bg-amber-50/60 rounded-3xl p-4 border border-amber-200/80 space-y-3 text-left">
+                    <div className="bg-amber-50/60 rounded-2xl p-3 border border-amber-200/80 space-y-2 text-left">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-extrabold text-amber-950 flex items-center gap-1.5 uppercase tracking-wider">
                           <Coins className="w-4 h-4 text-amber-600" />
@@ -711,50 +729,61 @@ export default function CartDrawer() {
                         {isCoinsApplied && (
                           <span className="text-[10px] font-black text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded-full border border-amber-300 flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3 text-amber-700" />
-                            <span>COINS APPLIED</span>
+                            <span>APPLIED</span>
                           </span>
                         )}
                       </div>
 
                       {isCoinsApplied ? (
-                        <div className="bg-white p-3.5 rounded-2xl border border-amber-200 shadow-2xs flex items-center justify-between gap-3">
+                        <div className="bg-white p-2.5 rounded-xl border border-amber-200 shadow-2xs flex items-center justify-between gap-2.5">
                           <div className="space-y-0.5">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5">
                               <span className="font-black text-xs text-amber-950 uppercase tracking-wide">
                                 🪙 {coinsRequested} Coins Used
                               </span>
-                              <span className="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded-full">
                                 -₹{coinDiscount} OFF
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-500 font-medium">Health Coins discount deducted from basket total.</p>
+                            <p className="text-[10px] text-slate-500 font-medium">Health Coins discount deducted from basket total.</p>
                           </div>
                           <button
                             onClick={removeCoins}
-                            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 text-xs font-extrabold transition-colors shrink-0"
+                            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 text-xs font-extrabold transition-colors shrink-0"
                           >
                             Remove
                           </button>
                         </div>
+                      ) : !user ? (
+                        <div className="bg-white p-2.5 rounded-xl border border-amber-100/90 shadow-2xs flex items-center justify-between gap-2">
+                          <div className="space-y-0.5">
+                            <p className="text-xs font-bold text-slate-900">
+                              Sign in to use Health Coins
+                            </p>
+                            <p className="text-[10px] text-slate-500 font-medium">
+                              Earn and redeem Health Coins on every test booking.
+                            </p>
+                          </div>
+                        </div>
                       ) : (
-                        <div className="bg-white p-3.5 rounded-2xl border border-amber-100/90 shadow-2xs flex items-center justify-between gap-3">
+                        <div className="bg-white p-2.5 rounded-xl border border-amber-100/90 shadow-2xs flex items-center justify-between gap-2.5">
                           <div className="space-y-0.5">
                             <p className="text-xs font-bold text-slate-900 flex items-center gap-1">
                               <span>You have</span>
                               <strong className="text-amber-700 font-extrabold">{walletBalance.toLocaleString()} Coins</strong>
-                              <span className="text-slate-400 font-normal text-[11px]">
+                              <span className="text-slate-400 font-normal text-[10px]">
                                 (≈ ₹{Math.floor(walletBalance / (walletSettings?.coins_per_rupee || 10))})
                               </span>
                             </p>
                             <p className="text-[10px] text-slate-500 font-medium">
-                              Max usable: {walletSettings?.maximum_coins_per_order || 500} Coins (₹{Math.floor((walletSettings?.maximum_coins_per_order || 500) / (walletSettings?.coins_per_rupee || 10))}) per order
+                              Max usable: {walletSettings?.maximum_coins_per_order || 500} Coins (₹{Math.floor((walletSettings?.maximum_coins_per_order || 500) / (walletSettings?.coins_per_rupee || 10))})
                             </p>
                           </div>
                           <button
                             type="button"
                             onClick={() => applyCoins()}
                             disabled={walletBalance < (walletSettings?.minimum_coins_to_redeem || 100)}
-                            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-slate-950 font-black text-xs transition-colors shrink-0 shadow-xs cursor-pointer"
+                            className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-slate-950 font-black text-xs transition-colors shrink-0 shadow-xs cursor-pointer"
                           >
                             Use Coins
                           </button>
@@ -762,7 +791,7 @@ export default function CartDrawer() {
                       )}
 
                       {coinsError && (
-                        <div className="text-rose-600 text-xs font-semibold flex items-center gap-1.5 pt-0.5 animate-in fade-in">
+                        <div className="text-rose-600 text-[11px] font-semibold flex items-center gap-1 pt-0.5 animate-in fade-in">
                           <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                           <span>{coinsError}</span>
                         </div>
@@ -771,7 +800,7 @@ export default function CartDrawer() {
                   )}
 
                   {/* 🏷️ PROMO CODE / OFFERS SECTION */}
-                  <div className="bg-purple-50/60 rounded-3xl p-4 border border-purple-100/90 space-y-3.5 text-left">
+                  <div className="bg-purple-50/60 rounded-2xl p-3 border border-purple-100/90 space-y-2 text-left">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-extrabold text-purple-950 flex items-center gap-1.5 uppercase tracking-wider">
                         <Tag className="w-4 h-4 text-purple-700" />
@@ -786,21 +815,21 @@ export default function CartDrawer() {
                     </div>
 
                     {appliedPromo ? (
-                      <div className="bg-white p-3.5 rounded-2xl border border-purple-200 shadow-2xs flex items-center justify-between gap-3">
+                      <div className="bg-white p-2.5 rounded-xl border border-purple-200 shadow-2xs flex items-center justify-between gap-2.5">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
                             <span className="font-black text-xs text-purple-950 uppercase tracking-wide">
                               ✓ {appliedPromo.code}
                             </span>
-                            <span className="text-[10px] font-extrabold bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full">
-                              -₹{promoDiscount} OFF
+                            <span className="text-[10px] font-extrabold bg-purple-100 text-purple-900 px-1.5 py-0.5 rounded-full">
+                              -₹{typeof promoDiscount === 'number' ? promoDiscount : (promoDiscount?.discountAmount || 0)} OFF
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-500 font-medium">Promo code successfully applied to basket.</p>
+                          <p className="text-[10px] text-slate-500 font-medium">Promo code successfully applied to basket.</p>
                         </div>
                         <button
                           onClick={removePromoCode}
-                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 text-xs font-extrabold transition-colors shrink-0"
+                          className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 text-xs font-extrabold transition-colors shrink-0"
                         >
                           Remove
                         </button>
@@ -814,41 +843,41 @@ export default function CartDrawer() {
                             setPromoInput(e.target.value.toUpperCase());
                           }}
                           placeholder="Enter promo code (e.g. HEALTH50)"
-                          className="flex-1 px-3.5 py-2.5 rounded-2xl border border-purple-200 text-xs font-extrabold uppercase focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white placeholder:normal-case placeholder:font-medium"
+                          className="flex-1 px-3 py-2 rounded-xl border border-purple-200 text-xs font-extrabold uppercase focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white placeholder:normal-case placeholder:font-medium"
                         />
                         <button
                           type="submit"
                           disabled={promoLoading || !promoInput.trim()}
-                          className="px-5 py-2.5 rounded-2xl bg-purple-700 hover:bg-purple-800 disabled:opacity-50 text-white font-extrabold text-xs shadow-xs transition-colors flex items-center justify-center cursor-pointer shrink-0"
+                          className="px-4 py-2 rounded-xl bg-purple-700 hover:bg-purple-800 disabled:opacity-50 text-white font-extrabold text-xs shadow-xs transition-colors flex items-center justify-center cursor-pointer shrink-0"
                         >
-                          {promoLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Apply'}
+                          {promoLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : 'Apply'}
                         </button>
                       </form>
                     )}
 
                     {promoError && (
-                      <div className="text-rose-600 text-xs font-semibold flex items-center gap-1.5 pt-0.5 animate-in fade-in">
+                      <div className="text-rose-600 text-[11px] font-semibold flex items-center gap-1 pt-0.5 animate-in fade-in">
                         <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                        <span>{promoError}</span>
+                        <span>{typeof promoError === 'string' ? promoError : (promoError?.message || String(promoError))}</span>
                       </div>
                     )}
 
                     {!appliedPromo && availablePromos && availablePromos.length > 0 && (
-                      <div className="space-y-2 pt-1 border-t border-purple-100/80">
+                      <div className="space-y-1.5 pt-1 border-t border-purple-100/80">
                         <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Available Offers:</span>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1.5">
                           {availablePromos.map((offer) => (
                             <button
                               key={offer.id || offer.code}
                               onClick={() => handleApplyAvailableOffer(offer.code)}
-                              className="text-left px-3 py-1.5 rounded-xl bg-white hover:bg-purple-100/70 border border-purple-200 text-purple-950 font-bold text-[11px] flex items-center justify-between gap-2 shadow-2xs transition-all cursor-pointer group"
+                              className="text-left px-2.5 py-1 rounded-lg bg-white hover:bg-purple-100/70 border border-purple-200 text-purple-950 font-bold text-[10px] flex items-center justify-between gap-1.5 shadow-2xs transition-all cursor-pointer group"
                             >
                               <span className="flex items-center gap-1">
                                 <Sparkles className="w-3 h-3 text-purple-700 shrink-0" />
                                 <strong>{offer.code}</strong>
                                 <span className="text-slate-500 font-medium">({offer.discount_type === 'flat' ? `₹${offer.discount_value} OFF` : `${offer.discount_value}% OFF`})</span>
                               </span>
-                              <span className="text-[10px] text-purple-700 underline font-extrabold group-hover:text-purple-900">Apply</span>
+                              <span className="text-[9px] text-purple-700 underline font-extrabold group-hover:text-purple-900">Apply</span>
                             </button>
                           ))}
                         </div>
@@ -863,9 +892,9 @@ export default function CartDrawer() {
 
             {/* Drawer Footer Summary */}
             {cartItems.length > 0 && checkoutStep === 'cart' && (
-              <div className="p-6 bg-slate-50 border-t border-slate-200/80 space-y-4 text-left">
+              <div className="p-4 bg-slate-50 border-t border-slate-200/80 space-y-3 text-left">
                 
-                <div className="space-y-2 text-xs">
+                <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between text-slate-600 font-semibold">
                     <span>Total MRP</span>
                     <span>₹{originalSubtotal}</span>
@@ -879,7 +908,7 @@ export default function CartDrawer() {
                   {appliedPromo && promoDiscount > 0 && (
                     <div className="flex justify-between text-purple-900 font-black">
                       <span>Promo Discount ({appliedPromo.code})</span>
-                      <span>-₹{promoDiscount}</span>
+                      <span>-₹{typeof promoDiscount === 'number' ? promoDiscount : (promoDiscount?.discountAmount || 0)}</span>
                     </div>
                   )}
                   {isCoinsApplied && coinDiscount > 0 && (
@@ -893,23 +922,23 @@ export default function CartDrawer() {
                     <span className="text-emerald-700 font-bold uppercase">FREE</span>
                   </div>
 
-                  <div className="pt-2 border-t border-slate-200 flex justify-between items-baseline">
-                    <span className="text-sm font-extrabold text-slate-900">Total Amount Payable</span>
-                    <span className="text-2xl font-black text-purple-900">₹{finalPayable}</span>
+                  <div className="pt-1.5 border-t border-slate-200 flex justify-between items-baseline">
+                    <span className="text-xs sm:text-sm font-extrabold text-slate-900">Total Amount Payable</span>
+                    <span className="text-xl sm:text-2xl font-black text-purple-900">₹{finalPayable}</span>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
                   <button
-                    onClick={() => setCheckoutStep('checkout')}
-                    className="w-full py-4 rounded-2xl bg-purple-700 hover:bg-purple-800 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-purple-700/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    onClick={handleProceedToCheckout}
+                    className="w-full py-3 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-purple-700/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>Proceed to Checkout</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-slate-500 pt-1">
+                <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-slate-500 pt-0.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-purple-700" />
                   <span>NABL Partner Lab Verification • Zero Setup Fees</span>
                 </div>
@@ -919,6 +948,14 @@ export default function CartDrawer() {
           </div>
         </div>
       </div>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={handleAuthModalSuccess}
+        title="Login to Continue"
+        subtitle="Please login to continue with your healthcare booking."
+      />
 
       <RazorpayDemoModal
         isOpen={isDemoModalOpen}

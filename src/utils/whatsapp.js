@@ -7,7 +7,7 @@
 export const WHATSAPP_NUMBER = (typeof import.meta !== 'undefined' && import.meta.env ? 
   (import.meta.env.VITE_HEALTH_EXPRESS_WHATSAPP_NUMBER ||
    import.meta.env.VITE_HEALTHeXpress_WHATSAPP_NUMBER || 
-   import.meta.env.VITE_WHATSAPP_NUMBER) : null) || "918123414120"; // Dedicated WhatsApp number: +91 81234 14120
+   import.meta.env.VITE_WHATSAPP_NUMBER) : null) || "917676558809"; // Dedicated Health Express WhatsApp & Contact number: +91 76765 58809
 
 export const DEFAULT_MESSAGES = {
   general: "Namaste Health Express! I would like help coordinating healthcare services for myself / my family.",

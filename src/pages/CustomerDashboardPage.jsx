@@ -13,6 +13,7 @@ import {
 } from '../services/customerAccountService';
 import { fetchWalletData, DEFAULT_WALLET_SETTINGS } from '../services/walletService';
 import { openWhatsApp, DEFAULT_MESSAGES } from '../utils/whatsapp';
+import { subscribeUserDashboard, unsubscribeChannel } from '../services/realtimeService';
 
 export default function CustomerDashboardPage() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function CustomerDashboardPage() {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'records' | 'prescriptions' | 'orders' | 'wallet'
   const [records, setRecords] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [walletBalance, setWalletBalance] = useState(1000);
+  const [walletBalance, setWalletBalance] = useState(0);
   const [walletTransactions, setWalletTransactions] = useState([]);
   const [stats, setStats] = useState({
     totalFiles: 0,
@@ -45,6 +46,40 @@ export default function CustomerDashboardPage() {
       loadCustomerData();
     }
   }, [isLoggedIn, authLoading, navigate]);
+
+  // REALTIME SYNCHRONIZATION: Subscribe user to live updates on their orders & prescriptions
+  useEffect(() => {
+    const userId = user?.id;
+    if (!isLoggedIn || !userId) return;
+
+    const channel = subscribeUserDashboard({
+      userId,
+      onOrderChange: ({ eventType, record }) => {
+        if (!record || !record.id) return;
+        setOrders((prev) => {
+          const exists = prev.some((o) => o.id === record.id);
+          return exists
+            ? prev.map((o) => (o.id === record.id ? { ...o, ...record } : o))
+            : [record, ...prev];
+        });
+      },
+      onPrescriptionChange: ({ eventType, record }) => {
+        if (!record || !record.id) return;
+        setRecords((prev) => {
+          const exists = prev.some((r) => r.id === record.id);
+          return exists
+            ? prev.map((r) => (r.id === record.id ? { ...r, ...record } : r))
+            : [record, ...prev];
+        });
+      }
+    });
+
+    return () => {
+      if (channel) {
+        unsubscribeChannel(channel);
+      }
+    };
+  }, [isLoggedIn, user?.id]);
 
   const loadCustomerData = async () => {
     setIsLoading(true);
@@ -275,15 +310,15 @@ export default function CustomerDashboardPage() {
                 <h3 className="text-base font-extrabold text-slate-900">No health records uploaded.</h3>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                 {records.map((doc) => (
-                  <div key={doc.id} className="p-5 rounded-3xl bg-white border border-purple-100 shadow-xs space-y-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h4 className="text-sm font-extrabold text-slate-900 line-clamp-1">{doc.fileName}</h4>
+                  <div key={doc.id} className="p-5 rounded-3xl bg-white border border-purple-100 shadow-xs space-y-3 min-w-0 w-full box-border">
+                    <div className="flex items-start justify-between gap-3 min-w-0">
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-sm font-extrabold text-slate-900 break-words [overflow-wrap:anywhere] min-w-0">{doc.fileName}</h4>
                         <p className="text-[11px] text-slate-500">Uploaded on {new Date(doc.uploadDate).toLocaleDateString()}</p>
                       </div>
-                      <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10px] font-extrabold uppercase">
+                      <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10px] font-extrabold uppercase shrink-0">
                         {doc.recordType}
                       </span>
                     </div>
@@ -308,7 +343,7 @@ export default function CustomerDashboardPage() {
 
         {/* TAB 4: PRESCRIPTIONS */}
         {activeTab === 'prescriptions' && (
-          <div className="bg-white rounded-3xl p-6 border border-purple-100 shadow-sm space-y-6 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 border border-purple-100 shadow-sm space-y-6 animate-in fade-in duration-200 min-w-0">
             <div>
               <h2 className="text-xl font-extrabold text-slate-900">Uploaded Prescriptions</h2>
               <p className="text-xs text-slate-500">Prescriptions submitted for doctor consultation or lab test matching.</p>
@@ -320,10 +355,10 @@ export default function CustomerDashboardPage() {
                 <h3 className="text-base font-extrabold text-slate-900">No prescriptions found.</h3>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                 {records.filter(r => r.recordType === 'prescription').map((doc) => (
-                  <div key={doc.id} className="p-5 rounded-3xl bg-white border border-purple-100 shadow-xs space-y-3">
-                    <h4 className="text-sm font-extrabold text-slate-900">{doc.fileName}</h4>
+                  <div key={doc.id} className="p-5 rounded-3xl bg-white border border-purple-100 shadow-xs space-y-3 min-w-0 w-full box-border">
+                    <h4 className="text-sm font-extrabold text-slate-900 break-words [overflow-wrap:anywhere] min-w-0">{doc.fileName}</h4>
                     <p className="text-[11px] text-slate-500">{new Date(doc.uploadDate).toLocaleDateString()}</p>
                     {doc.fileUrl && (
                       <a href={doc.fileUrl} target="_blank" rel="noreferrer" className="w-full py-2 bg-purple-50 text-purple-900 font-bold text-xs rounded-xl flex items-center justify-center gap-2">

@@ -1,13 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const getEnvVar = (name) => {
-  try {
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[name]) {
-      return import.meta.env[name];
-    }
-  } catch (e) {
-    // Ignore in non-Vite environments
-  }
+const getEnvVar = (name, viteValue) => {
+  if (viteValue) return viteValue;
   try {
     if (typeof process !== 'undefined' && process.env && process.env[name]) {
       return process.env[name];
@@ -18,8 +12,8 @@ const getEnvVar = (name) => {
   return null;
 };
 
-const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
-const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
+const supabaseUrl = getEnvVar('VITE_SUPABASE_URL', typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SUPABASE_URL : null);
+const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY', typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SUPABASE_ANON_KEY : null);
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 

@@ -48,16 +48,26 @@ export function AuthProvider({ children }) {
           setSession(currentSession);
           if (currentSession?.user) {
             const authUser = currentSession.user;
+            await linkGuestRecords();
+
+            // Fetch patient record for authentic full_name
+            const { data: patRec } = await supabase
+              .from('patients')
+              .select('full_name, phone_e164')
+              .eq('user_id', authUser.id)
+              .maybeSingle();
+
+            const resolvedName = patRec?.full_name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || null;
+
             const mappedUser = {
               id: authUser.id,
-              name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Member',
+              name: resolvedName,
               email: authUser.email || '',
-              phone: authUser.phone || authUser.user_metadata?.phone || '',
+              phone: authUser.phone || patRec?.phone_e164 || authUser.user_metadata?.phone || '',
               authType: authUser.phone ? 'phone' : 'email',
               createdAt: authUser.created_at
             };
             setUser(mappedUser);
-            await linkGuestRecords();
           }
         } catch (e) {
           console.error('Error fetching Supabase auth session:', e);
@@ -68,20 +78,28 @@ export function AuthProvider({ children }) {
           setSession(newSession);
           if (newSession?.user) {
             const authUser = newSession.user;
+            if (event === 'SIGNED_IN') {
+              await linkGuestRecords();
+            }
+
+            const { data: patRec } = await supabase
+              .from('patients')
+              .select('full_name, phone_e164')
+              .eq('user_id', authUser.id)
+              .maybeSingle();
+
+            const resolvedName = patRec?.full_name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || null;
+
             const mappedUser = {
               id: authUser.id,
-              name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Member',
+              name: resolvedName,
               email: authUser.email || '',
-              phone: authUser.phone || authUser.user_metadata?.phone || '',
+              phone: authUser.phone || patRec?.phone_e164 || authUser.user_metadata?.phone || '',
               authType: authUser.phone ? 'phone' : 'email',
               createdAt: authUser.created_at
             };
             setUser(mappedUser);
             localStorage.setItem('health_express_user', JSON.stringify(mappedUser));
-
-            if (event === 'SIGNED_IN') {
-              await linkGuestRecords();
-            }
           } else if (event === 'SIGNED_OUT') {
             setUser(null);
             setSession(null);

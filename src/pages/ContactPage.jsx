@@ -46,8 +46,8 @@ export default function ContactPage() {
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-slate-900">WhatsApp Support</div>
-                  <div className="text-xs text-slate-600 mt-0.5">Instant prescription & booking assistance</div>
+                  <div className="text-xs font-bold text-slate-900">WhatsApp & Direct Call</div>
+                  <div className="text-xs font-extrabold text-emerald-700 mt-0.5">+91 76765 58809</div>
                   <button 
                     onClick={() => openWhatsApp(DEFAULT_MESSAGES.general)}
                     className="text-xs font-bold text-emerald-600 hover:text-emerald-800 mt-1 inline-block"
@@ -73,7 +73,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <div className="text-xs font-bold text-slate-900">Coverage Cities</div>
-                  <div className="text-xs text-slate-600 mt-0.5">Bangalore, Hyderabad, Mumbai, Delhi NCR, Pune</div>
+                  <div className="text-xs text-slate-600 mt-0.5">Bengaluru (Active Live) — Other cities expansion soon</div>
                 </div>
               </div>
             </div>
