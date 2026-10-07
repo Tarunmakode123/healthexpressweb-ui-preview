@@ -36,23 +36,39 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="py-5 lg:py-10 bg-white relative overflow-hidden" id="faq-section">
+    <section className="py-5 lg:py-10 bg-white relative overflow-hidden font-serif" id="faq-section" style={{ fontFamily: 'serif' }}>
       
+      <style>{`
+        /* Strongly Highlighted Sharp Edge FAQ Accordion Box */
+        .faq-card-box {
+          background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(97, 44, 156, 0.06) 100%);
+          border: 1.5px solid rgba(97, 44, 156, 0.28);
+          border-left: 5px solid #612c9c;
+          border-top: 3px solid rgba(97, 44, 156, 0.4);
+          box-shadow: 0 10px 30px -4px rgba(97, 44, 156, 0.18);
+          transition: all 0.35s ease;
+        }
+        .faq-card-box:hover {
+          box-shadow: 0 16px 38px -4px rgba(97, 44, 156, 0.3);
+          border-color: rgba(97, 44, 156, 0.6);
+        }
+      `}</style>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <span 
-            className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full font-extrabold text-xs uppercase tracking-wider border"
-            style={{ backgroundColor: 'rgba(97, 44, 156, 0.05)', borderColor: 'rgba(97, 44, 156, 0.2)', color: '#612c9c' }}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-none font-extrabold text-xs uppercase tracking-wider border font-serif"
+            style={{ backgroundColor: 'rgba(97, 44, 156, 0.05)', borderColor: 'rgba(97, 44, 156, 0.2)', color: '#612c9c', fontFamily: 'serif' }}
           >
             <Sparkles className="w-3.5 h-3.5" style={{ color: '#612c9c' }} />
             GOT QUESTIONS?
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
-            Frequently Asked <span style={{ color: '#612c9c' }}>Questions</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight font-serif" style={{ fontFamily: 'serif' }}>
+            Frequently Asked <span style={{ color: '#612c9c', fontFamily: 'serif' }}>Questions</span>
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 font-medium">
+          <p className="text-xs sm:text-sm text-slate-600 font-medium font-serif" style={{ fontFamily: 'serif' }}>
             Find answers to common questions about our services, bookings, and home healthcare options.
           </p>
         </div>
@@ -62,12 +78,12 @@ export default function FaqSection() {
           
           {/* LEFT SIDE: Bigger Image Showcase */}
           <div className="lg:col-span-5 relative flex items-center justify-center">
-            <div className="relative w-full max-w-lg bg-white p-4 rounded-3xl border-2 border-purple-100 shadow-2xl overflow-hidden group">
-              <div className="absolute top-6 left-6 z-10 bg-slate-900/85 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-xl flex items-center gap-1.5 shadow-md">
+            <div className="relative w-full max-w-lg bg-white p-4 rounded-none border-2 border-purple-100 shadow-2xl overflow-hidden group">
+              <div className="absolute top-6 left-6 z-10 bg-slate-900/85 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-none flex items-center gap-1.5 shadow-md font-serif" style={{ fontFamily: 'serif' }}>
                 <ShieldCheck className="w-4 h-4" style={{ color: '#612c9c' }} />
                 <span>Health Express Assistance</span>
               </div>
-              <div className="h-[420px] sm:h-[480px] w-full rounded-2xl overflow-hidden bg-slate-100">
+              <div className="h-[420px] sm:h-[480px] w-full rounded-none overflow-hidden bg-slate-100">
                 <img 
                   src="/images/services/testimggnew.webp" 
                   alt="Health Express Support" 
@@ -75,16 +91,16 @@ export default function FaqSection() {
                 />
               </div>
               {/* Floating Trust Indicator Card */}
-              <div className="absolute bottom-6 left-6 right-6 z-20 bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-purple-100 flex items-center gap-3">
+              <div className="absolute bottom-6 left-6 right-6 z-20 bg-white/95 backdrop-blur-md p-4 rounded-none shadow-xl border border-purple-100 flex items-center gap-3 font-serif" style={{ fontFamily: 'serif' }}>
                 <div 
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md"
+                  className="w-10 h-10 rounded-none flex items-center justify-center text-white shrink-0 shadow-md"
                   style={{ backgroundColor: '#612c9c' }}
                 >
                   <HelpCircle className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="text-xs sm:text-sm font-extrabold text-slate-900">Need More Clarity?</h4>
-                  <p className="text-[11px] text-slate-600 font-medium">Our health experts are available 24/7.</p>
+                  <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 font-serif" style={{ fontFamily: 'serif' }}>Need More Clarity?</h4>
+                  <p className="text-[11px] text-slate-600 font-medium font-serif" style={{ fontFamily: 'serif' }}>Our health experts are available 24/7.</p>
                 </div>
               </div>
             </div>
@@ -97,19 +113,21 @@ export default function FaqSection() {
               return (
                 <div 
                   key={index}
-                  className={`bg-white rounded-2xl border-2 transition-all duration-300 overflow-hidden shadow-2xs ${
-                    isOpen ? 'border-purple-300 shadow-md' : 'border-slate-200/80 hover:border-purple-200'
+                  className={`rounded-none transition-all duration-300 overflow-hidden font-serif ${
+                    isOpen ? 'faq-card-box shadow-md' : 'bg-white border-2 border-slate-200/80 hover:border-purple-300 shadow-2xs'
                   }`}
+                  style={{ fontFamily: 'serif' }}
                 >
                   <button
                     onClick={() => toggleFaq(index)}
-                    className="w-full p-4 sm:p-5 flex items-center justify-between gap-4 text-left font-extrabold text-slate-900 text-sm sm:text-base cursor-pointer focus:outline-none"
+                    className="w-full p-4 sm:p-5 flex items-center justify-between gap-4 text-left font-extrabold text-slate-900 text-sm sm:text-base cursor-pointer focus:outline-none font-serif"
+                    style={{ fontFamily: 'serif' }}
                   >
                     <span className={isOpen ? "text-[#612c9c]" : "text-slate-900"}>
                       {faq.question}
                     </span>
                     <div 
-                      className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 ${
+                      className={`w-7 h-7 rounded-none flex items-center justify-center shrink-0 transition-transform duration-300 ${
                         isOpen ? 'rotate-180 bg-[#612c9c] text-white' : 'bg-slate-100 text-slate-600'
                       }`}
                     >
@@ -118,7 +136,7 @@ export default function FaqSection() {
                   </button>
 
                   {isOpen && (
-                    <div className="px-4 sm:px-5 pb-5 pt-0 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed border-t border-slate-100 pt-3">
+                    <div className="px-4 sm:px-5 pb-5 pt-0 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed border-t border-purple-100/60 pt-3 font-serif" style={{ fontFamily: 'serif' }}>
                       {faq.answer}
                     </div>
                   )}

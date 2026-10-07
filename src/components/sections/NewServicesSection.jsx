@@ -64,12 +64,9 @@ export default function NewServicesSection() {
   };
 
   return (
-    <section className="py-8 sm:py-14 lg:py-10 bg-white relative overflow-hidden" style={{ fontFamily: 'emoji' }}>
-      
+    <section className="py-8 sm:py-14 lg:py-10 bg-white relative overflow-hidden font-serif" style={{ fontFamily: 'serif' }}>
+     
       <style>{`
-        * {
-          font-family: emoji !important;
-        }
         @keyframes scroll-left {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
@@ -98,23 +95,42 @@ export default function NewServicesSection() {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
+        /* Custom little purple box shadow */
+        .purple-box-shadow {
+          box-shadow: 0 4px 20px -4px rgba(97, 44, 156, 0.15);
+        }
+        .purple-box-shadow-hover:hover {
+          box-shadow: 0 6px 25px -2px rgba(97, 44, 156, 0.25);
+        }
+        /* Enhanced Category Info Box Highlight */
+        .category-info-box {
+          background: linear-gradient(135deg, rgba(97, 44, 156, 0.12) 0%, rgba(97, 44, 156, 0.03) 100%);
+          border: 1px solid rgba(97, 44, 156, 0.25);
+          border-left: 4px solid #612c9c;
+          box-shadow: 0 8px 25px -4px rgba(97, 44, 156, 0.15);
+          transition: all 0.3s ease;
+        }
+        .category-info-box:hover {
+          box-shadow: 0 12px 30px -4px rgba(97, 44, 156, 0.25);
+          border-color: rgba(97, 44, 156, 0.4);
+        }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 lg:space-y-14">
         
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <span 
-            className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-none font-extrabold text-xs uppercase tracking-wider border"
-            style={{ backgroundColor: 'rgba(97, 44, 156, 0.05)', borderColor: 'rgba(97, 44, 156, 0.2)', color: '#612c9c' }}
+          <span
+            className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-none font-extrabold text-xs uppercase tracking-wider border font-serif"
+            style={{ backgroundColor: 'rgba(97, 44, 156, 0.05)', borderColor: 'rgba(97, 44, 156, 0.2)', color: '#612c9c', fontFamily: 'serif' }}
           >
             Explore Offerings
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight font-serif" style={{ fontFamily: 'serif' }}>
             Specialized Medical Services, <br />
-            <span style={{ color: '#612c9c' }}>Designed For Care.</span>
+            <span style={{ color: '#612c9c', fontFamily: 'serif' }}>Designed For Care.</span>
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 font-medium">
+          <p className="text-xs sm:text-sm text-slate-600 font-medium font-serif" style={{ fontFamily: 'serif' }}>
             Browse through our extensive catalog of lab diagnostics, home care, radiology scans, and surgical procedures.
           </p>
         </div>
@@ -124,44 +140,42 @@ export default function NewServicesSection() {
           {CATEGORY_ROWS.map((row, rowIndex) => (
             <div key={rowIndex} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center border-b border-slate-100 pb-8 last:border-b-0">
               
-              {/* LEFT SIDE: Category Title & Info Box (Purple Background) */}
-              <div 
-                className="lg:col-span-3 space-y-3 text-left p-5 rounded-none shadow-sm"
-                style={{ backgroundColor: '#612c9c' }}
-              >
-                <span 
-                  className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-none border inline-block text-white"
-                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', borderColor: 'rgba(255, 255, 255, 0.3)' }}
+              {/* LEFT SIDE: Highly Highlighted Category Info Box */}
+              <div className="lg:col-span-3 space-y-3 text-left category-info-box rounded-none p-5 sm:p-5.5 font-serif" style={{ fontFamily: 'serif' }}>
+                <span
+                  className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-none border inline-block bg-white/80 shadow-xs font-serif"
+                  style={{ borderColor: 'rgba(97, 44, 156, 0.3)', color: '#612c9c', fontFamily: 'serif' }}
                 >
                   {row.badgeLabel}
                 </span>
-                <h3 className="text-xl sm:text-2xl font-black text-white capitalize">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 capitalize font-serif" style={{ fontFamily: 'serif' }}>
                   {row.categoryName}
                 </h3>
-                <p className="text-xs text-white/90 font-medium leading-relaxed">
+                <p className="text-xs text-slate-600 font-medium leading-relaxed font-serif" style={{ fontFamily: 'serif' }}>
                   {row.subtitle}
                 </p>
-                <div className="pt-2 flex items-center justify-between border-t border-white/20">
+                <div className="pt-1 flex items-center justify-between">
                   <Link
                     to="/services"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-white transition-opacity hover:opacity-80"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold transition-colors hover:underline font-serif"
+                    style={{ color: '#612c9c', fontFamily: 'serif' }}
                   >
                     <span>View All {row.categoryName}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-white" />
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
 
                   {/* Manual Navigation Arrows */}
                   <div className="flex items-center gap-1.5">
-                    <button 
+                    <button
                       onClick={() => scrollManual(rowIndex, 'left')}
-                      className="w-7 h-7 rounded-none border border-white/30 flex items-center justify-center text-white hover:bg-white/10 transition-colors cursor-pointer"
+                      className="w-7 h-7 rounded-none border border-purple-200 bg-white flex items-center justify-center text-slate-700 hover:bg-purple-50 transition-colors cursor-pointer shadow-xs"
                       title="Scroll Left"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => scrollManual(rowIndex, 'right')}
-                      className="w-7 h-7 rounded-none border border-white/30 flex items-center justify-center text-white hover:bg-white/10 transition-colors cursor-pointer"
+                      className="w-7 h-7 rounded-none border border-purple-200 bg-white flex items-center justify-center text-slate-700 hover:bg-purple-50 transition-colors cursor-pointer shadow-xs"
                       title="Scroll Right"
                     >
                       <ChevronRight className="w-4 h-4" />
@@ -177,29 +191,29 @@ export default function NewServicesSection() {
                 <div className="absolute left-0 inset-y-0 w-4 sm:w-6 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
                 <div className="absolute right-0 inset-y-0 w-4 sm:w-6 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
-                <div 
-                  ref={rowRefs[rowIndex]} 
+                <div
+                  ref={rowRefs[rowIndex]}
                   className="flex gap-3 overflow-x-auto no-scrollbar scroll-smooth w-full"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                   <div className={row.reverse ? "animate-marquee-right" : "animate-marquee-left"}>
                     {row.items.concat(row.items).map((item, idx) => (
-                      <div 
+                      <div
                         key={idx}
-                        className="w-[310px] sm:w-[330px] bg-white hover:bg-purple-50/20 rounded-none p-4.5 mx-3 flex flex-col justify-between shrink-0 transition-all duration-300 group shadow-sm hover:shadow-md"
-                        style={{ border: '2px solid #612c9c' }}
+                        className="w-[310px] sm:w-[330px] bg-white hover:bg-purple-50/10 border border-slate-200 rounded-none p-4.5 mx-3 flex flex-col justify-between shrink-0 transition-all duration-300 group purple-box-shadow purple-box-shadow-hover font-serif"
+                        style={{ fontFamily: 'serif' }}
                       >
                         <div className="space-y-3">
                           
                           {/* Brand & Badge Top Header */}
                           <div className="flex items-center justify-between pb-1">
-                            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-none flex items-center gap-1">
+                            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-none flex items-center gap-1 font-serif" style={{ fontFamily: 'serif' }}>
                               <ShieldCheck className="w-3 h-3" style={{ color: '#612c9c' }} />
                               {item.brand}
                             </span>
-                            <span 
-                              className="text-[9px] font-extrabold px-2 py-0.5 rounded-none border"
-                              style={{ backgroundColor: 'rgba(97, 44, 156, 0.05)', borderColor: 'rgba(97, 44, 156, 0.2)', color: '#612c9c' }}
+                            <span
+                              className="text-[9px] font-extrabold px-2 py-0.5 rounded-none border font-serif"
+                              style={{ backgroundColor: 'rgba(97, 44, 156, 0.05)', borderColor: 'rgba(97, 44, 156, 0.2)', color: '#612c9c', fontFamily: 'serif' }}
                             >
                               Verified
                             </span>
@@ -207,33 +221,33 @@ export default function NewServicesSection() {
 
                           {/* Sub-Service Name with Larger Dynamic Icon on the Right Side */}
                           <div className="flex items-center justify-between gap-3 pt-1">
-                            <h4 className="text-sm font-extrabold text-slate-900 leading-snug line-clamp-2">
+                            <h4 className="text-sm font-extrabold text-slate-900 leading-snug line-clamp-2 font-serif" style={{ fontFamily: 'serif' }}>
                               {item.name}
                             </h4>
-                            <img 
-                              src={item.icon || "/images/services/iconnew.png"} 
-                              alt="icon" 
-                              className="w-8 h-8 object-contain shrink-0" 
+                            <img
+                              src={item.icon || "/images/services/iconnew.png"}
+                              alt="icon"
+                              className="w-8 h-8 object-contain shrink-0"
                             />
                           </div>
 
                           {/* Description */}
-                          <p className="text-xs text-slate-600 font-medium leading-relaxed line-clamp-2">
+                          <p className="text-xs text-slate-600 font-medium leading-relaxed line-clamp-2 font-serif" style={{ fontFamily: 'serif' }}>
                             {item.desc}
                           </p>
                         </div>
 
                         {/* Bottom Action */}
                         <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between">
-                          <Link 
+                          <Link
                             to="/services"
-                            className="px-3.5 py-1.5 rounded-none text-white font-bold text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
-                            style={{ backgroundColor: '#612c9c' }}
+                            className="px-3.5 py-1.5 rounded-none text-white font-bold text-xs transition-colors flex items-center gap-1.5 font-serif"
+                            style={{ backgroundColor: '#612c9c', fontFamily: 'serif' }}
                           >
                             <span>Book Now</span>
                             <ArrowRight className="w-3.5 h-3.5 text-white/80" />
                           </Link>
-                          <span className="text-[11px] font-extrabold text-slate-500">
+                          <span className="text-[11px] font-extrabold text-slate-500 font-serif" style={{ fontFamily: 'serif' }}>
                             Available 24/7
                           </span>
                         </div>

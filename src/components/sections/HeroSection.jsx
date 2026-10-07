@@ -45,28 +45,28 @@ export default function HeroSection({ onOpenUploadModal }) {
           {/* LEFT SIDE: Content */}
           <div className="lg:col-span-7 space-y-5 sm:space-y-6 text-left p-2 sm:p-0">
             
-            {/* Tagline with Brand Color */}
+            {/* Tagline with Brand Color & Sharp Edges */}
             <div>
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#612c9c]/10 border border-[#612c9c]/30 text-[#612c9c] font-extrabold text-[11px] sm:text-xs uppercase tracking-wider shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-none bg-[#612c9c]/10 border border-[#612c9c]/30 text-[#612c9c] font-extrabold text-[11px] sm:text-xs uppercase tracking-wider shadow-2xs font-serif">
                 Your Trusted Healthcare
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl lg:text-[70px] leading-[48px] sm:leading-[70px] lg:leading-[85px] font-black tracking-tight text-slate-900">
+            <h1 className="text-4xl sm:text-6xl lg:text-[70px] leading-[48px] sm:leading-[70px] lg:leading-[85px] font-black tracking-tight text-slate-900 font-serif" style={{ fontFamily: 'serif' }}>
              Your personal <br />
-              <span style={{ color: '#612c9c' }}>health  </span>
-              <span className="text-slate-900">manager.</span>
+              <span style={{ color: '#612c9c', fontFamily: 'serif' }}>health  </span>
+              <span className="text-slate-900 font-serif">manager.</span>
             </h1>
 
-            <p className="text-xs sm:text-base text-slate-700 font-medium leading-relaxed max-w-md pt-1">
+            <p className="text-xs sm:text-base text-slate-700 font-medium leading-relaxed max-w-md pt-1 font-serif" style={{ fontFamily: 'serif' }}>
               From diagnostics and home healthcare to specialist services and preventive care, Health Express helps you discover, coordinate and manage healthcare for you.
             </p>
 
             <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <button
                 onClick={onOpenUploadModal}
-                className="w-full sm:w-auto px-7 py-3.5 rounded-xl text-white font-bold text-sm shadow-lg transition-all flex items-center justify-center sm:justify-start gap-2.5 active:scale-95 cursor-pointer"
-                style={{ backgroundColor: '#612c9c', boxShadow: '0 10px 25px -5px rgba(97, 44, 156, 0.3)' }}
+                className="w-full sm:w-auto px-7 py-3.5 rounded-none text-white font-bold text-sm shadow-lg transition-all flex items-center justify-center sm:justify-start gap-2.5 active:scale-95 cursor-pointer font-serif"
+                style={{ backgroundColor: '#612c9c', boxShadow: '0 10px 25px -5px rgba(97, 44, 156, 0.3)', fontFamily: 'serif' }}
               >
                 <span>Book Your Test</span>
                 <ArrowRight className="w-4 h-4 text-white/80" />
@@ -74,8 +74,8 @@ export default function HeroSection({ onOpenUploadModal }) {
 
               <Link
                 to="/services"
-                className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-white hover:bg-purple-50/50 border text-slate-900 font-bold text-sm shadow-xs transition-all active:scale-95 flex items-center justify-center"
-                style={{ borderColor: 'rgba(97, 44, 156, 0.2)' }}
+                className="w-full sm:w-auto px-7 py-3.5 rounded-none bg-white hover:bg-purple-50/50 border text-slate-900 font-bold text-sm shadow-xs transition-all active:scale-95 flex items-center justify-center font-serif"
+                style={{ borderColor: 'rgba(97, 44, 156, 0.2)', fontFamily: 'serif' }}
               >
                 <span>Explore Services</span>
               </Link>
