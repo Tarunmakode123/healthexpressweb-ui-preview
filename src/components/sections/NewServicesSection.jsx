@@ -64,9 +64,12 @@ export default function NewServicesSection() {
   };
 
   return (
-    <section className="py-8 sm:py-14 lg:py-10 bg-white relative overflow-hidden">
+    <section className="py-8 sm:py-14 lg:py-10 bg-white relative overflow-hidden" style={{ fontFamily: 'emoji' }}>
       
       <style>{`
+        * {
+          font-family: emoji !important;
+        }
         @keyframes scroll-left {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
@@ -102,7 +105,7 @@ export default function NewServicesSection() {
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <span 
-            className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full font-extrabold text-xs uppercase tracking-wider border"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-none font-extrabold text-xs uppercase tracking-wider border"
             style={{ backgroundColor: 'rgba(97, 44, 156, 0.05)', borderColor: 'rgba(97, 44, 156, 0.2)', color: '#612c9c' }}
           >
             Explore Offerings
@@ -121,42 +124,44 @@ export default function NewServicesSection() {
           {CATEGORY_ROWS.map((row, rowIndex) => (
             <div key={rowIndex} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center border-b border-slate-100 pb-8 last:border-b-0">
               
-              {/* LEFT SIDE: Category Title & Info */}
-              <div className="lg:col-span-3 space-y-2 text-left">
+              {/* LEFT SIDE: Category Title & Info Box (Purple Background) */}
+              <div 
+                className="lg:col-span-3 space-y-3 text-left p-5 rounded-none shadow-sm"
+                style={{ backgroundColor: '#612c9c' }}
+              >
                 <span 
-                  className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-md border inline-block"
-                  style={{ backgroundColor: 'rgba(97, 44, 156, 0.05)', borderColor: 'rgba(97, 44, 156, 0.2)', color: '#612c9c' }}
+                  className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-none border inline-block text-white"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', borderColor: 'rgba(255, 255, 255, 0.3)' }}
                 >
                   {row.badgeLabel}
                 </span>
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 capitalize">
+                <h3 className="text-xl sm:text-2xl font-black text-white capitalize">
                   {row.categoryName}
                 </h3>
-                <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                <p className="text-xs text-white/90 font-medium leading-relaxed">
                   {row.subtitle}
                 </p>
-                <div className="pt-1 flex items-center justify-between">
+                <div className="pt-2 flex items-center justify-between border-t border-white/20">
                   <Link
                     to="/services"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold transition-colors hover:underline"
-                    style={{ color: '#612c9c' }}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-white transition-opacity hover:opacity-80"
                   >
                     <span>View All {row.categoryName}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5 text-white" />
                   </Link>
 
                   {/* Manual Navigation Arrows */}
                   <div className="flex items-center gap-1.5">
                     <button 
                       onClick={() => scrollManual(rowIndex, 'left')}
-                      className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-purple-50 transition-colors cursor-pointer"
+                      className="w-7 h-7 rounded-none border border-white/30 flex items-center justify-center text-white hover:bg-white/10 transition-colors cursor-pointer"
                       title="Scroll Left"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
                     <button 
                       onClick={() => scrollManual(rowIndex, 'right')}
-                      className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-purple-50 transition-colors cursor-pointer"
+                      className="w-7 h-7 rounded-none border border-white/30 flex items-center justify-center text-white hover:bg-white/10 transition-colors cursor-pointer"
                       title="Scroll Right"
                     >
                       <ChevronRight className="w-4 h-4" />
@@ -181,18 +186,19 @@ export default function NewServicesSection() {
                     {row.items.concat(row.items).map((item, idx) => (
                       <div 
                         key={idx}
-                        className="w-[310px] sm:w-[330px] bg-white hover:bg-purple-50/20 border-2 border-slate-200/80 rounded-2xl p-4.5 mx-3 flex flex-col justify-between shrink-0 transition-all duration-300 group shadow-sm hover:shadow-md"
+                        className="w-[310px] sm:w-[330px] bg-white hover:bg-purple-50/20 rounded-none p-4.5 mx-3 flex flex-col justify-between shrink-0 transition-all duration-300 group shadow-sm hover:shadow-md"
+                        style={{ border: '2px solid #612c9c' }}
                       >
                         <div className="space-y-3">
                           
                           {/* Brand & Badge Top Header */}
                           <div className="flex items-center justify-between pb-1">
-                            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded flex items-center gap-1">
+                            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-none flex items-center gap-1">
                               <ShieldCheck className="w-3 h-3" style={{ color: '#612c9c' }} />
                               {item.brand}
                             </span>
                             <span 
-                              className="text-[9px] font-extrabold px-2 py-0.5 rounded border"
+                              className="text-[9px] font-extrabold px-2 py-0.5 rounded-none border"
                               style={{ backgroundColor: 'rgba(97, 44, 156, 0.05)', borderColor: 'rgba(97, 44, 156, 0.2)', color: '#612c9c' }}
                             >
                               Verified
@@ -221,7 +227,7 @@ export default function NewServicesSection() {
                         <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between">
                           <Link 
                             to="/services"
-                            className="px-3.5 py-1.5 rounded-xl text-white font-bold text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
+                            className="px-3.5 py-1.5 rounded-none text-white font-bold text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
                             style={{ backgroundColor: '#612c9c' }}
                           >
                             <span>Book Now</span>
