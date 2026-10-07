@@ -1,0 +1,5 @@
+# Health Express Robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://healthexpress.in/sitemap.xml
