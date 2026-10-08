@@ -90,4 +90,4 @@ export default function HeroSection({ onOpenUploadModal }) {
       </div>
     </section>
   );
-}
+} 
