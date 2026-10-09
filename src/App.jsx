@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import CartDrawer from './components/cart/CartDrawer';
 import CalculatorModal from './components/common/CalculatorModal';
@@ -13,6 +13,7 @@ import HealthExpressIntro from './components/common/HealthExpressIntro';
 
 import HomePage from './pages/HomePage';
 import ServicesPage from './pages/ServicesPage';
+import HomeNursingCarePage from './pages/HomeNursingCarePage';
 import ServiceDetailPage from './pages/ServiceDetailPage';
 import HealthLibraryPage from './pages/HealthLibraryPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
@@ -23,10 +24,33 @@ import SurgeryDetailPage from './pages/SurgeryDetailPage';
 import AboutPage from './pages/AboutPage';
 import ProvidersPage from './pages/ProvidersPage';
 import ContactPage from './pages/ContactPage';
+import TelemedicinePage from './pages/TelemedicinePage';
 import LegalPage from './pages/LegalPage';
 import AuthPage from './pages/AuthPage';
-import CustomerDashboardPage from './pages/CustomerDashboardPage';
+import GenericDashboardPage from './pages/GenericDashboardPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+
+// Protected Route Component for Authenticated User Session
+function ProtectedRoute({ children }) {
+  const { session, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 text-purple-900 font-sans">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-extrabold tracking-wide">Authenticating...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session?.user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return children;
+}
 
 // Helper component to scroll window to top on route navigation & track PAGE_VIEW
 function ScrollToTop() {
@@ -45,6 +69,8 @@ function ScrollToTop() {
 function MainLayout() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isDashboardRoute = location.pathname.startsWith('/dashboard');
+  const isStandaloneApp = isAdminRoute || isDashboardRoute;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCalcModalOpen, setIsCalcModalOpen] = useState(false);
@@ -72,11 +98,11 @@ function MainLayout() {
   return (
     <>
       <ScrollToTop />
-      {!isAdminRoute && <HealthExpressIntro />}
-      <div className={`min-h-screen flex flex-col font-sans selection:bg-purple-100 selection:text-purple-900 antialiased ${isAdminRoute ? 'bg-slate-900 text-slate-100' : 'bg-white text-slate-900'}`}>
+      {!isStandaloneApp && <HealthExpressIntro />}
+      <div className={`min-h-screen flex flex-col font-sans selection:bg-purple-100 selection:text-purple-900 antialiased w-full max-w-full overflow-x-hidden ${isAdminRoute ? 'bg-slate-900 text-slate-100' : 'bg-white text-slate-900'}`}>
         
         {/* Responsive Header Navbar (Public Consumer Pages Only) */}
-        {!isAdminRoute && (
+        {!isStandaloneApp && (
           <Navbar onOpenUploadModal={handleOpenUploadModal} onOpenCalculatorModal={handleOpenCalcModal} />
         )}
 
@@ -85,6 +111,7 @@ function MainLayout() {
           <Routes>
             <Route path="/" element={<HomePage onOpenUploadModal={handleOpenUploadModal} onOpenCalculatorModal={handleOpenCalcModal} />} />
             <Route path="/services" element={<ServicesPage onOpenUploadModal={handleOpenUploadModal} />} />
+            <Route path="/home-nursing-care" element={<HomeNursingCarePage onOpenUploadModal={handleOpenUploadModal} />} />
             <Route path="/services/:slug" element={<ServiceDetailPage onOpenUploadModal={handleOpenUploadModal} />} />
             <Route path="/surgeries" element={<SurgeriesPage onOpenUploadModal={handleOpenUploadModal} />} />
             <Route path="/surgeries/:slug" element={<SurgeryDetailPage onOpenUploadModal={handleOpenUploadModal} />} />
@@ -95,18 +122,20 @@ function MainLayout() {
             <Route path="/about" element={<AboutPage onOpenUploadModal={handleOpenUploadModal} />} />
             <Route path="/providers" element={<ProvidersPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/telemedicine" element={<TelemedicinePage />} />
             <Route path="/legal/:type" element={<LegalPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/signup" element={<AuthPage />} />
-            <Route path="/account" element={<Navigate to="/admin" replace />} />
+            <Route path="/account" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<ProtectedRoute><GenericDashboardPage /></ProtectedRoute>} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admin/*" element={<AdminDashboardPage />} />
           </Routes>
         </main>
 
         {/* Public Website Footer & Floating Widgets (Public Consumer Pages Only) */}
-        {!isAdminRoute && (
+        {!isStandaloneApp && (
           <>
             <Footer onOpenUploadModal={handleOpenUploadModal} />
             <CareManagerCTA />

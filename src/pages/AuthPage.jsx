@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Phone, User, ArrowRight, CheckCircle2, ShieldCheck, 
   Sparkles, AlertCircle, RefreshCw, ChevronLeft, Gift, Coins
@@ -11,24 +11,18 @@ import { POPULAR_COUNTRY_CODES, validateAndNormalizeInternationalPhone } from '.
 
 export default function AuthPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { login, signup, isLoggedIn, user } = useAuth();
+  const { login, signup, isLoggedIn, user, session } = useAuth();
   const { walletSettings } = useCart();
 
-  // Mode: 'signin' or 'signup'
-  const initialMode = searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
-  const [mode, setMode] = useState(initialMode);
-
   // Form Fields for Mobile OTP
-  const [fullName, setFullName] = useState('');
   const [countryCode, setCountryCode] = useState('+91');
   const [phone, setPhone] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(true);
 
-  // OTP Step State
+  // OTP Step State (6-Digit SMS OTP)
   const [otpStep, setOtpStep] = useState(false);
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const [otpTimer, setOtpTimer] = useState(30);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otpTimer, setOtpTimer] = useState(60);
   const [canResendOtp, setCanResendOtp] = useState(false);
 
   // Status & Validation
@@ -36,7 +30,14 @@ export default function AuthPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-  // OTP Timer countdown
+  // If already logged in, redirect directly to /dashboard
+  useEffect(() => {
+    if (session?.user || (isLoggedIn && user)) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [session, isLoggedIn, user, navigate]);
+
+  // OTP Timer countdown (60s)
   useEffect(() => {
     let timer;
     if (otpStep && otpTimer > 0) {
@@ -49,71 +50,15 @@ export default function AuthPage() {
     return () => clearInterval(timer);
   }, [otpStep, otpTimer]);
 
-  // If already logged in, show user profile status card
-  if (isLoggedIn && user) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-gradient-to-b from-purple-50/50 via-white to-slate-50">
-        <div className="max-w-md w-full bg-white rounded-3xl p-8 border border-purple-100 shadow-xl text-center space-y-6">
-          <div className="w-16 h-16 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center mx-auto text-2xl font-bold shadow-xs">
-            {user.name ? user.name.charAt(0).toUpperCase() : '👤'}
-          </div>
-          
-          <div className="space-y-1">
-            <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-extrabold uppercase">
-              Logged In
-            </span>
-            <h2 className="text-2xl font-extrabold text-slate-900 pt-2">
-              Welcome back, {user.name || 'Health Express Member'}!
-            </h2>
-            <p className="text-xs text-slate-500">
-              📱 {user.phone || 'Verified Mobile Account'}
-            </p>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-purple-50/70 border border-purple-100 text-left text-xs space-y-2">
-            <div className="font-bold text-purple-900 flex items-center justify-between">
-              <span>Personal Health Manager</span>
-              <span className="text-[10px] bg-purple-700 text-white px-2 py-0.5 rounded-full">Active</span>
-            </div>
-            <p className="text-slate-600 text-[11px] leading-relaxed">
-              Your account is ready to manage diagnostic appointments, home nursing schedules, and family health records.
-            </p>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <button
-              onClick={() => navigate('/account')}
-              className="w-full py-3.5 px-6 rounded-2xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
-            >
-              <span>Go to My Account Dashboard</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            
-            <button
-              onClick={() => openWhatsApp(DEFAULT_MESSAGES.general)}
-              className="w-full py-3.5 px-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-            >
-              <span>Connect with Care Manager on WhatsApp</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Handle Phone Submit (Step 1: Request OTP)
+  // Handle Phone Submit (Step 1: Request OTP via Supabase Auth)
   const handlePhoneSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
 
     const phoneCheck = validateAndNormalizeInternationalPhone(phone, countryCode);
     if (!phoneCheck.isValid) {
       setError(phoneCheck.error);
-      return;
-    }
-
-    if (mode === 'signup' && !fullName.trim()) {
-      setError('Please enter your full name.');
       return;
     }
 
@@ -125,53 +70,79 @@ export default function AuthPage() {
     setIsSubmitting(true);
 
     try {
-      const { supabase, isSupabaseConfigured } = await import('../lib/supabase');
-      if (isSupabaseConfigured && supabase) {
-        const { error: otpErr } = await supabase.auth.signInWithOtp({
-          phone: phoneCheck.phone_e164
-        });
-        if (otpErr) {
-          console.info('Supabase signInWithOtp notice:', otpErr.message);
+      // 1. Record OTP_REQUESTED analytics event
+      try {
+        const { logAnalyticsEvent } = await import('../utils/analytics.js');
+        await logAnalyticsEvent('OTP_REQUESTED', { metadata: { auth_method: 'phone_otp', phone: phoneCheck.phone_e164 } });
+      } catch (e) {
+        // Non-blocking
+      }
+
+      // 2. Trigger Supabase Auth signInWithOtp (fires Supabase Send SMS Hook to Fast2SMS)
+      const { supabase, isSupabaseConfigured } = await import('../lib/supabase.js');
+      if (!isSupabaseConfigured || !supabase) {
+        setError('Supabase environment is not configured.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const { error: otpErr } = await supabase.auth.signInWithOtp({
+        phone: phoneCheck.phone_e164
+      });
+
+      if (otpErr) {
+        console.warn('Supabase signInWithOtp notice:', otpErr.message);
+        if (otpErr.message?.toLowerCase().includes('unsupported phone provider') || otpErr.message?.toLowerCase().includes('provider')) {
+          setError('Phone Provider is currently disabled in Supabase. Please enable "Phone Provider" under Supabase Dashboard -> Auth -> Providers.');
+        } else {
+          setError(otpErr.message || 'Unable to send OTP right now. Please try again.');
         }
+        setIsSubmitting(false);
+        return;
       }
 
       setIsSubmitting(false);
       setOtpStep(true);
-      setOtpTimer(30);
+      setOtpTimer(60);
       setCanResendOtp(false);
-      setSuccessMessage(`OTP sent successfully to ${phoneCheck.phone_e164}`);
+      setSuccessMessage(`A 6-digit OTP code has been sent to ${phoneCheck.phone_e164}`);
     } catch (err) {
       console.error('Send OTP exception:', err);
       setIsSubmitting(false);
-      setOtpStep(true);
-      setOtpTimer(30);
-      setCanResendOtp(false);
-      setSuccessMessage(`OTP sent successfully to ${phoneCheck.phone_e164}`);
+      setError(err.message || 'Error requesting OTP. Please try again.');
     }
   };
 
-  // Handle OTP Input Change
+  // Handle OTP Input Change for 6 Digits
   const handleOtpChange = (index, value) => {
-    if (isNaN(value)) return;
+    if (value && !/^\d+$/.test(value)) return;
+
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
     // Auto-advance input
-    if (value && index < 3) {
+    if (value && index < 5) {
       const nextInput = document.getElementById(`otp-input-${index + 1}`);
       if (nextInput) nextInput.focus();
     }
   };
 
-  // Handle OTP Verify (Step 2: Authenticate)
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-input-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  // Handle OTP Verify (Step 2: Authenticate via Supabase Auth)
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setError('');
     
-    const otpCode = otp.join('');
-    if (otpCode.length < 4) {
-      setError('Please enter the 4-digit OTP code.');
+    const otpCode = otp.join('').trim();
+    if (otpCode.length < 6) {
+      setError('Please enter the full 6-digit OTP code.');
       return;
     }
 
@@ -181,81 +152,85 @@ export default function AuthPage() {
     setIsSubmitting(true);
 
     try {
-      const { supabase, isSupabaseConfigured } = await import('../lib/supabase');
-      if (isSupabaseConfigured && supabase) {
-        const { data: authData, error: authErr } = await supabase.auth.verifyOtp({
-          phone: phone_e164,
-          token: otpCode,
-          type: 'sms'
-        });
-
-        if (authErr) {
-          console.info('Supabase SMS OTP fallback notice:', authErr.message);
-        }
+      const { supabase, isSupabaseConfigured } = await import('../lib/supabase.js');
+      if (!isSupabaseConfigured || !supabase) {
+        setError('Supabase connection is not configured.');
+        setIsSubmitting(false);
+        return;
       }
 
-      const userData = {
-        name: mode === 'signup' ? fullName.trim() : (fullName.trim() || 'Health Express Member'),
+      // Verify OTP natively through Supabase Auth
+      const { data: authData, error: authErr } = await supabase.auth.verifyOtp({
         phone: phone_e164,
-        authType: 'phone',
-        createdAt: new Date().toISOString()
-      };
+        token: otpCode,
+        type: 'sms'
+      });
 
-      if (mode === 'signup') {
-        signup(userData);
-        import('../utils/analytics.js').then(({ logAnalyticsEvent }) => {
-          logAnalyticsEvent('SIGNUP_COMPLETED', { metadata: { auth_type: 'phone' } });
-        }).catch(() => {});
-      } else {
-        login(userData);
-        import('../utils/analytics.js').then(({ logAnalyticsEvent }) => {
-          logAnalyticsEvent('LOGIN_SUCCESS', { metadata: { auth_type: 'phone' } });
-        }).catch(() => {});
+      if (authErr || !authData?.session) {
+        console.warn('Supabase verifyOtp error:', authErr?.message);
+        try {
+          const { logAnalyticsEvent } = await import('../utils/analytics.js');
+          await logAnalyticsEvent('LOGIN_FAILED', { metadata: { phone: phone_e164, reason: authErr?.message || 'Invalid OTP' } });
+        } catch (e) {}
+        
+        setError(authErr?.message || 'Invalid or expired OTP code. Please check and try again.');
+        setIsSubmitting(false);
+        return;
       }
+
+      // Log canonical login success event
+      try {
+        const { logAnalyticsEvent } = await import('../utils/analytics.js');
+        await logAnalyticsEvent('LOGIN_SUCCESS', { userId: authData.session.user.id, metadata: { auth_method: 'phone_otp', phone: phone_e164 }, deduplicate: true });
+      } catch (e) {}
+
       setIsSubmitting(false);
-      navigate('/account');
+      navigate('/dashboard', { replace: true });
     } catch (err) {
-      console.error('OTP login exception:', err);
+      console.error('OTP verification exception:', err);
+      setError(err.message || 'Authentication error. Please try again.');
       setIsSubmitting(false);
-      navigate('/account');
     }
   };
 
   // Handle Resend OTP
   const handleResendOtp = async () => {
     if (!canResendOtp) return;
-    setOtpTimer(30);
+    setOtpTimer(60);
     setCanResendOtp(false);
     setError('');
 
     const phoneCheck = validateAndNormalizeInternationalPhone(phone, countryCode);
     if (phoneCheck.isValid) {
       try {
-        const { supabase, isSupabaseConfigured } = await import('../lib/supabase');
+        const { logAnalyticsEvent } = await import('../utils/analytics.js');
+        await logAnalyticsEvent('OTP_REQUESTED', { metadata: { auth_method: 'phone_otp', resend: true, phone: phoneCheck.phone_e164 } });
+      } catch (e) {}
+
+      try {
+        const { supabase, isSupabaseConfigured } = await import('../lib/supabase.js');
         if (isSupabaseConfigured && supabase) {
           await supabase.auth.signInWithOtp({
             phone: phoneCheck.phone_e164
           });
         }
       } catch (e) {
-        // Ignore fallback
+        console.warn('Resend OTP warning:', e);
       }
     }
 
-    setSuccessMessage(`A new 4-digit OTP code has been sent to ${phoneCheck.phone_e164 || phone}.`);
+    setSuccessMessage(`A new 6-digit OTP code has been sent to ${phoneCheck.phone_e164 || phone}.`);
   };
 
   return (
-    <div className="min-h-[85vh] bg-gradient-to-b from-purple-50/70 via-slate-50/30 to-white py-12 md:py-16 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[85vh] bg-gradient-to-b from-purple-50/70 via-slate-50/30 to-white py-12 md:py-16 pb-28 md:pb-16 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       
       <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 bg-white rounded-3xl border border-purple-100 shadow-2xl overflow-hidden">
         
         {/* Left Side: Visual Brand Feature Box */}
         <div className="lg:col-span-5 bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-950 p-8 sm:p-10 text-white flex flex-col justify-between relative overflow-hidden">
-          
-          {/* Background Ambient Glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 space-y-6">
             <Link to="/" className="inline-block group bg-white px-3.5 py-2 rounded-2xl border border-purple-100 shadow-md transition-transform hover:scale-105">
@@ -280,7 +255,6 @@ export default function AuthPage() {
             </div>
           </div>
 
-          {/* Key Value Props List */}
           <div className="relative z-10 space-y-4 pt-8 border-t border-purple-700/60">
             <div className="flex items-start gap-3">
               <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
@@ -311,7 +285,7 @@ export default function AuthPage() {
             Starting with Bengaluru launch. Need instant help?{' '}
             <button 
               onClick={() => openWhatsApp(DEFAULT_MESSAGES.general)} 
-              className="text-white underline font-semibold hover:text-purple-200"
+              className="text-white underline font-semibold hover:text-purple-200 cursor-pointer"
             >
               WhatsApp Support
             </button>
@@ -334,44 +308,14 @@ export default function AuthPage() {
             </div>
           )}
 
-          {/* Sign In / Sign Up Mode Switcher */}
+          {/* Single Unified Login Header */}
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => {
-                  setMode('signin');
-                  setOtpStep(false);
-                  setError('');
-                  setSuccessMessage('');
-                }}
-                className={`text-lg font-extrabold pb-1 transition-all cursor-pointer ${
-                  mode === 'signin'
-                    ? 'text-purple-800 border-b-2 border-purple-700'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                Sign In
-              </button>
-
-              <button
-                onClick={() => {
-                  setMode('signup');
-                  setOtpStep(false);
-                  setError('');
-                  setSuccessMessage('');
-                }}
-                className={`text-lg font-extrabold pb-1 transition-all cursor-pointer ${
-                  mode === 'signup'
-                    ? 'text-purple-800 border-b-2 border-purple-700'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                Sign Up
-              </button>
-            </div>
+            <h1 className="text-lg font-extrabold pb-1 text-purple-800 border-b-2 border-purple-700">
+              Login
+            </h1>
 
             <span className="text-xs font-semibold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-100">
-              {mode === 'signin' ? 'Mobile OTP Login' : 'Mobile OTP Registration'}
+              Mobile OTP Login
             </span>
           </div>
 
@@ -395,21 +339,6 @@ export default function AuthPage() {
             {!otpStep ? (
               /* Step 1: Mobile Number Input Form */
               <form onSubmit={handlePhoneSubmit} className="space-y-4">
-                {mode === 'signup' && (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-800">Full Name</label>
-                    <div className="relative">
-                      <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="e.g. Rahul Sharma"
-                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:bg-white"
-                      />
-                    </div>
-                  </div>
-                )}
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-800">Mobile Phone Number</label>
@@ -417,23 +346,23 @@ export default function AuthPage() {
                     <select
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
-                      className="px-2.5 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:bg-white shrink-0 cursor-pointer"
+                      className="w-[95px] sm:w-[115px] shrink-0 px-2 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-extrabold text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:bg-white cursor-pointer"
                     >
                       {POPULAR_COUNTRY_CODES.map((c) => (
                         <option key={c.code} value={c.code}>
-                          {c.flag} {c.code} ({c.country})
+                          {c.flag} {c.code}
                         </option>
                       ))}
                     </select>
 
-                    <div className="relative flex-1">
-                      <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <div className="relative flex-1 min-w-0">
+                      <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 shrink-0 pointer-events-none" />
                       <input
                         type="tel"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder={countryCode === '+91' ? 'Enter 10-digit mobile' : 'Enter mobile number'}
-                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:bg-white"
+                        className="w-full pl-10 pr-3 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:bg-white"
                       />
                     </div>
                   </div>
@@ -474,7 +403,7 @@ export default function AuthPage() {
                 </button>
               </form>
             ) : (
-              /* Step 2: Enter 4-Digit OTP Code */
+              /* Step 2: Enter 6-Digit OTP Code */
               <form onSubmit={handleVerifyOtp} className="space-y-5 animate-in fade-in">
                 <div className="flex items-center justify-between">
                   <button
@@ -493,26 +422,28 @@ export default function AuthPage() {
                 <div className="text-center space-y-1">
                   <h3 className="text-base font-extrabold text-slate-900">Enter Verification Code</h3>
                   <p className="text-xs text-slate-500">
-                    Enter the 4-digit code sent to <strong className="text-slate-800">{countryCode} {phone}</strong>
+                    Enter the 6-digit OTP code sent to <strong className="text-slate-800">{countryCode} {phone}</strong>
                   </p>
                 </div>
 
-                {/* 4 OTP Digit Boxes */}
-                <div className="flex items-center justify-center gap-3 py-2">
+                {/* 6 OTP Digit Boxes */}
+                <div className="flex items-center justify-center gap-2.5 py-2">
                   {otp.map((digit, idx) => (
                     <input
                       key={idx}
                       id={`otp-input-${idx}`}
                       type="text"
+                      inputMode="numeric"
                       maxLength={1}
                       value={digit}
                       onChange={(e) => handleOtpChange(idx, e.target.value)}
-                      className="w-12 h-14 text-center text-xl font-extrabold text-slate-900 bg-purple-50/60 border border-purple-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-700 focus:bg-white shadow-xs"
+                      onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                      className="w-10 sm:w-12 h-14 text-center text-xl font-extrabold text-slate-900 bg-purple-50/60 border border-purple-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-700 focus:bg-white shadow-xs"
                     />
                   ))}
                 </div>
 
-                {/* Resend Timer */}
+                {/* Resend Timer (60s) */}
                 <div className="text-center text-xs text-slate-500">
                   {!canResendOtp ? (
                     <span>Resend OTP code in <strong className="text-purple-700 font-bold">{otpTimer}s</strong></span>
@@ -548,39 +479,9 @@ export default function AuthPage() {
             )}
           </div>
 
-          {/* Bottom Switch Mode helper */}
+          {/* Mobile OTP Access Note */}
           <div className="text-center pt-2 text-xs text-slate-500">
-            {mode === 'signin' ? (
-              <span>
-                Don't have a Health Express account?{' '}
-                <button
-                  onClick={() => {
-                    setMode('signup');
-                    setOtpStep(false);
-                    setError('');
-                    setSuccessMessage('');
-                  }}
-                  className="text-purple-700 font-extrabold hover:underline cursor-pointer"
-                >
-                  Sign Up Free
-                </button>
-              </span>
-            ) : (
-              <span>
-                Already registered?{' '}
-                <button
-                  onClick={() => {
-                    setMode('signin');
-                    setOtpStep(false);
-                    setError('');
-                    setSuccessMessage('');
-                  }}
-                  className="text-purple-700 font-extrabold hover:underline cursor-pointer"
-                >
-                  Sign In
-                </button>
-              </span>
-            )}
+            <span>Instant, passwordless mobile access for all Health Express members.</span>
           </div>
 
         </div>

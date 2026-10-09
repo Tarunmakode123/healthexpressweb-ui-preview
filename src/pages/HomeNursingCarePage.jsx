@@ -151,57 +151,92 @@ export default function HomeNursingCarePage({ onOpenUploadModal }) {
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans text-left">
       
       {/* 1. HERO SECTION */}
-      <section className="bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900 text-white pt-10 pb-16 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]" />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl space-y-6">
-            
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-700/80 border border-purple-500/50 text-purple-100 text-xs font-extrabold tracking-wide uppercase">
-              <MapPin className="w-3.5 h-3.5 text-purple-200" />
-              <span>Bengaluru Care Coordination</span>
-            </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
-              Home Nursing & Care
-            </h1>
 
-            <p className="text-lg sm:text-xl font-bold text-purple-100 leading-snug">
-              Professional care and caregiving support, where your family needs it.
-            </p>
 
-            <p className="text-sm sm:text-base text-purple-100/90 leading-relaxed font-normal max-w-2xl">
-              Tell Health Express what kind of support you need, where you need it and for how long. We help coordinate suitable home nursing and caregiving options for your family — starting with select areas in Bengaluru.
-            </p>
 
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <button
-                onClick={() => handleWhatsAppAction()}
-                className="px-6 py-3.5 rounded-xl bg-white text-purple-900 font-black text-sm flex items-center justify-center gap-2.5 shadow-lg hover:bg-purple-50 transition-all cursor-pointer touch-target active:scale-95"
-              >
-                <MessageSquare className="w-4.5 h-4.5 text-purple-700 fill-purple-700/20" />
-                <span>Request Home Care</span>
-              </button>
 
-              <button
-                onClick={onOpenUploadModal}
-                className="px-6 py-3.5 rounded-xl bg-purple-700/70 hover:bg-purple-700 text-white font-extrabold text-sm border border-purple-400/40 flex items-center justify-center gap-2 transition-all cursor-pointer"
-              >
-                <span>Upload Doctor Prescription</span>
-                <ArrowRight className="w-4 h-4 text-purple-200" />
-              </button>
-            </div>
+    
 
-            <div className="flex items-center gap-2 text-xs font-semibold text-purple-200 pt-1">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Currently serving select areas in Bengaluru.</span>
-            </div>
+<section className="relative text-white pt-20 pb-24 overflow-hidden bg-black">
+  {/* Big Background Image with minimal dark fade at edges */}
+  <div className="absolute inset-0 z-0">
+    <img
+      src="/images/services/nursingbanne.png"
+      alt="Home Nursing and Care Banner"
+      className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000"
+    />
+    {/* Very light gradient only at the left and bottom so text pops without hiding the image */}
+    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
+  </div>
 
-          </div>
-        </div>
-      </section>
+  {/* Main Content Container */}
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div className="max-w-3xl space-y-6">
+      
+      {/* Location Badge */}
+      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/30 text-white text-xs font-extrabold tracking-wide uppercase shadow-[0_4px_20px_rgba(255,255,255,0.15)]">
+        <MapPin className="w-3.5 h-3.5 text-purple-300 animate-pulse" />
+        <span>Bengaluru Care Coordination</span>
+      </div>
+
+      {/* Main Heading with White Glow Shadow */}
+      <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-[1.15] drop-shadow-[0_2px_16px_rgba(255,255,255,0.45)]">
+        Home Nursing <span className="text-purple-300">&</span> Care
+      </h1>
+
+      {/* Subheading with White Shadow */}
+      <p className="text-lg sm:text-xl font-bold text-gray-100 leading-snug drop-shadow-[0_2px_10px_rgba(255,255,255,0.35)]">
+        Professional care and caregiving support, where your family needs it.
+      </p>
+
+      {/* Description Paragraph with White-tinted Glass Overlay */}
+      <p className="text-sm sm:text-base text-gray-100 leading-relaxed font-normal max-w-2xl bg-black/50 backdrop-blur-md p-5 rounded-2xl border border-white/20 shadow-[0_8px_30px_rgba(255,255,255,0.1)]">
+        Tell Health Express what kind of support you need, where you need it and for how long. We help coordinate suitable home nursing and caregiving options for your family — starting with select areas in Bengaluru.
+      </p>
+
+      {/* Action Buttons */}
+      <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+        <button
+          onClick={() => handleWhatsAppAction()}
+          className="px-7 py-4 rounded-xl bg-white text-purple-950 font-black text-sm flex items-center justify-center gap-2.5 shadow-[0_6px_25px_rgba(255,255,255,0.25)] hover:bg-gray-100 hover:shadow-[0_8px_30px_rgba(255,255,255,0.4)] transition-all cursor-pointer touch-target active:scale-95 group"
+        >
+          <MessageSquare className="w-4.5 h-4.5 text-purple-700 fill-purple-700/20 transition-transform group-hover:scale-110" />
+          <span>Request Home Care</span>
+        </button>
+
+        <button
+          onClick={onOpenUploadModal}
+          className="px-7 py-4 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md text-white font-extrabold text-sm border border-white/30 flex items-center justify-center gap-2.5 shadow-[0_6px_25px_rgba(255,255,255,0.15)] transition-all cursor-pointer active:scale-95 group"
+        >
+          <span>Upload Doctor Prescription</span>
+          <ArrowRight className="w-4 h-4 text-purple-200 transition-transform group-hover:translate-x-1" />
+        </button>
+      </div>
+
+      {/* Trust / Service Area Indicator */}
+      <div className="flex items-center gap-2 text-xs font-semibold text-gray-200 pt-2 drop-shadow-[0_1px_6px_rgba(255,255,255,0.3)]">
+        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <span>Currently serving select areas in Bengaluru.</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
 
       {/* 2. SLIDING CAROUSEL DIRECTLY BELOW HERO */}
+      
+      
+      
+      
       <section className="bg-white py-10 border-b border-slate-200 shadow-2xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           
@@ -276,29 +311,95 @@ export default function HomeNursingCarePage({ onOpenUploadModal }) {
       </section>
 
       {/* 3. INTRO / SEO BODY */}
-      <section className="py-12 bg-slate-50/70 border-b border-slate-200/80">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 text-center sm:text-left">
-          <span className="text-[10px] font-black uppercase tracking-widest text-purple-800 bg-purple-100 px-3 py-1 rounded-full inline-block">
-            Simpler Care Coordination
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Home Nursing Care, Without the Search
-          </h2>
-          <div className="space-y-4 text-sm sm:text-base text-slate-700 font-medium leading-relaxed bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xs text-left">
+     <section className="py-16 sm:py-20 bg-white border-b border-slate-200 overflow-hidden">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
+      
+      {/* Left Column: Big Image with Purple Shadow & Equal Height Match */}
+      <div className="lg:col-span-6 relative flex items-center">
+        {/* Soft rich purple ambient glow behind the image */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-purple-700/25 via-indigo-600/15 to-purple-500/10 rounded-[2.5rem] blur-3xl transform scale-95" />
+        
+        {/* Image Container matching content height */}
+        <div className="relative w-full h-full min-h-[380px] sm:min-h-[440px] rounded-[2.5rem] overflow-hidden border-2 border-purple-200/80 shadow-[0_25px_60px_rgba(126,34,206,0.22)] bg-purple-50/50 group flex">
+          <img
+            src="/images/services/homecareimge.png"
+            alt="Home Nursing Care Coordination"
+            className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+          {/* Subtle bottom gradient vignette */}
+          <div className="absolute inset-0 bg-gradient-to-t from-purple-950/30 via-transparent to-transparent pointer-events-none" />
+        </div>
+      </div>
+
+      {/* Right Column: Content & Details (Equal Height Alignment) */}
+      <div className="lg:col-span-6 flex flex-col justify-between space-y-6 text-center sm:text-left">
+        
+        <div className="space-y-4">
+          {/* Badge */}
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-purple-900 bg-purple-100 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-purple-200 shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse" />
+              Simpler Care Coordination
+            </span>
+          </div>
+
+          {/* Heading */}
+       
+<h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+  Expert Home Nursing Care, <span className="text-purple-700">Right at Your Doorstep</span>
+</h2>
+
+        </div>
+
+        {/* Eye-Catching Styled Content Container */}
+        <div className="space-y-4 text-sm sm:text-base text-slate-700 font-medium leading-relaxed bg-gradient-to-br from-slate-50 via-white to-purple-50/30 p-6 sm:p-8 rounded-[2.5rem] border border-purple-100/80 shadow-[0_12px_35px_rgba(126,34,206,0.04)] text-left flex flex-col justify-center">
+          
+          {/* Paragraph 1 */}
+          <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-slate-100 shadow-2xs transition-all hover:border-purple-200">
+            <span className="w-2 h-2 rounded-full bg-purple-600 mt-2 shrink-0 shadow-xs" />
             <p>
-              Finding the right support for a loved one can be time-consuming — especially after a hospital stay, surgery, childbirth, illness or when an elderly family member needs help at home.
-            </p>
-            <p>
-              Health Express helps make the process simpler. Tell us about your care requirement, location, preferred duration and the type of support you need. We help coordinate suitable nursing and caregiving options based on your requirements.
-            </p>
-            <p>
-              From home nursing and elderly care to post-operative support, patient caregiving, respite care and postpartum assistance, Health Express gives your family one place to start.
+              Finding the right support for a loved one can be <strong className="text-slate-900 font-bold">time-consuming</strong> — especially after a hospital stay, surgery, childbirth, illness or when an elderly family member needs help at home.
             </p>
           </div>
+
+          {/* Paragraph 2 */}
+          <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-slate-100 shadow-2xs transition-all hover:border-purple-200">
+            <span className="w-2 h-2 rounded-full bg-purple-600 mt-2 shrink-0 shadow-xs" />
+            <p>
+              <strong className="text-purple-900 font-extrabold">Health Express</strong> helps make the process simpler. Tell us about your care requirement, location, preferred duration and the type of support you need to coordinate suitable options.
+            </p>
+          </div>
+
+          {/* Paragraph 3 */}
+          <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-slate-100 shadow-2xs transition-all hover:border-purple-200">
+            <span className="w-2 h-2 rounded-full bg-purple-600 mt-2 shrink-0 shadow-xs" />
+            <p>
+              From home nursing and elderly care to post-operative support, patient caregiving, and postpartum assistance, Health Express gives your family <strong className="text-slate-900 font-bold">one place to start</strong>.
+            </p>
+          </div>
+
         </div>
-      </section>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+
 
       {/* 4. CARE SERVICES */}
+
+
+
+
       <section className="py-14 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
@@ -399,7 +500,18 @@ export default function HomeNursingCarePage({ onOpenUploadModal }) {
             </div>
           </div>
 
+
+
+
+
+
+
+
           {/* Category 3: Mother & Baby Care */}
+
+
+
+
           <div className="space-y-6 pt-4">
             <div className="flex items-center gap-3 border-b border-slate-200 pb-3">
               <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-900 flex items-center justify-center font-black text-sm">
@@ -443,85 +555,179 @@ export default function HomeNursingCarePage({ onOpenUploadModal }) {
         </div>
       </section>
 
-      {/* 5. RUNNING CAROUSEL / STRIP */}
-      <section className="bg-purple-900 text-white py-10 overflow-hidden relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-purple-800 text-purple-200 border border-purple-700">
-            Specialized Care Programs
-          </span>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {RUNNING_CARE_STRIP.map((strip) => (
-              <div
-                key={strip.id}
-                className="bg-purple-800/80 hover:bg-purple-800 p-5 rounded-2xl border border-purple-700/80 transition-all space-y-2 text-left"
-              >
-                <h4 className="text-base font-extrabold text-white">{strip.title}</h4>
-                <p className="text-xs text-purple-200 leading-relaxed font-normal">{strip.desc}</p>
-              </div>
-            ))}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+      {/* 5. RUNNING CAROUSEL / STRIP */}
+     <section className="bg-gradient-to-b from-purple-950 via-purple-900 to-indigo-950 py-20 overflow-hidden relative border-b border-purple-800/40 shadow-2xl">
+  {/* Ambient background glow elements */}
+  <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+  <div className="absolute bottom-0 left-10 w-80 h-80 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
+    
+    {/* Section Header / Badge */}
+    <div className="text-center sm:text-left">
+      <span className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full bg-purple-800/90 text-purple-200 border border-purple-700 shadow-inner">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-300"></span>
+        </span>
+        Specialized Care Programs
+      </span>
+    </div>
+
+    {/* Cards Grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {RUNNING_CARE_STRIP.map((strip) => (
+        <div
+          key={strip.id}
+          className="bg-purple-900/40 hover:bg-purple-900/80 backdrop-blur-md p-7 rounded-3xl border border-purple-700/50 
+                     shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)] 
+                     hover:border-purple-400 
+                     hover:shadow-[0_20px_50px_-10px_rgba(168,85,247,0.4)] 
+                     transition-all duration-500 space-y-3 text-left group transform hover:-translate-y-1.5"
+        >
+          {/* Animated Icon Area */}
+          <div className="w-12 h-12 rounded-2xl bg-purple-800/80 border border-purple-600/60 flex items-center justify-center text-purple-200 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500 shadow-inner group-hover:scale-105">
+            <svg 
+              className="w-6 h-6 transition-transform duration-500 group-hover:rotate-[360deg]" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
           </div>
+
+          <h4 className="text-lg font-black text-white tracking-tight group-hover:text-purple-200 transition-colors duration-300 pt-1">
+            {strip.title}
+          </h4>
+          <p className="text-sm text-purple-200/90 leading-relaxed font-medium">
+            {strip.desc}
+          </p>
+          
+          {/* Decorative hover line */}
+          <div className="h-1 w-0 bg-gradient-to-r from-purple-400 to-indigo-300 rounded-full group-hover:w-full transition-all duration-500 mt-4"></div>
         </div>
-      </section>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+
+      
 
       {/* 6. HOW HEALTH EXPRESS WORKS */}
-      <section className="py-14 bg-slate-50 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-          
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-purple-800 bg-purple-100 px-3 py-1 rounded-full inline-block">
-              Simple 4-Step Process
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              How Health Express Works
-            </h2>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {HOW_IT_WORKS_STEPS.map((step) => (
-              <div
-                key={step.step}
-                className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs space-y-3 text-left relative"
-              >
-                <span className="text-2xl font-black text-purple-700 bg-purple-50 px-3 py-1 rounded-xl inline-block">
-                  {step.step}
-                </span>
-                <h3 className="text-base font-extrabold text-slate-900">{step.title}</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">{step.desc}</p>
-              </div>
-            ))}
-          </div>
 
+
+      <section className="py-20 bg-gradient-to-b from-white via-slate-50/50 to-purple-50/20 border-b border-slate-200">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    
+    {/* Section Header */}
+    <div className="text-center max-w-2xl mx-auto space-y-2">
+      <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest px-3.5 py-1.5 rounded-full bg-purple-100 text-purple-900 border border-purple-200/80 shadow-xs">
+        <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse" />
+        Simple 4-Step Process
+      </span>
+      <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+        How Health Express <span className="text-purple-700">Works</span>
+      </h2>
+      <p className="text-xs sm:text-sm text-slate-600 font-medium">
+        Getting professional and reliable home nursing support for your family is simple, transparent, and structured.
+      </p>
+    </div>
+
+    {/* Main Split Layout: Left Image Card & Right 4 Steps */}
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      
+      {/* Left Column: Visual Image Banner Card */}
+      <div className="lg:col-span-5 relative group">
+        <div className="absolute -inset-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl blur-md opacity-25 group-hover:opacity-40 transition duration-500"></div>
+        <div className="relative bg-white p-3 rounded-3xl border border-purple-100 shadow-xl overflow-hidden space-y-4">
+          <div className="relative h-72 sm:h-80 w-full rounded-2xl overflow-hidden bg-purple-950">
+            <img 
+              src="/images/services/smileimagetewo.jpg" 
+              alt="Health Express Home Care Support" 
+              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-purple-950/80 via-purple-950/20 to-transparent flex flex-col justify-end p-6 text-left">
+              <span className="text-[10px] font-black uppercase tracking-wider text-purple-200 bg-purple-900/80 backdrop-blur-md px-3 py-1 rounded-full w-fit mb-2 border border-purple-700/50">
+                Trusted Care 24/7
+              </span>
+              <h3 className="text-lg font-black text-white tracking-tight">
+                Compassionate Care Right at Your Doorstep
+              </h3>
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
+
+      {/* Right Column: 4-Step Grid/List */}
+      <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 text-left">
+        {HOW_IT_WORKS_STEPS.map((step) => (
+          <div
+            key={step.step}
+            className="bg-white p-6 rounded-3xl border border-purple-100/80 hover:border-purple-300 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_30px_rgba(126,34,206,0.08)] transition-all duration-300 space-y-3 group transform hover:-translate-y-1 flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between">
+              <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-900 to-purple-800 text-white flex items-center justify-center font-black text-sm shadow-md shadow-purple-900/20 group-hover:scale-110 transition-transform duration-300">
+                {step.step}
+              </span>
+              <span className="text-[10px] font-black text-purple-700 uppercase tracking-widest bg-purple-50 px-2.5 py-1 rounded-full border border-purple-100">
+                Step 0{step.step}
+              </span>
+            </div>
+            
+            <div className="space-y-1.5">
+              <h3 className="text-base font-extrabold text-slate-900 group-hover:text-purple-900 transition-colors">
+                {step.title}
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                {step.desc}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+
+
 
       {/* 7. WHY FAMILIES USE HEALTH EXPRESS */}
-      <section className="py-14 bg-white border-b border-slate-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Why Families Use Health Express
-            </h2>
-          </div>
-
-          <div className="bg-purple-50/60 p-6 sm:p-8 rounded-3xl border border-purple-200/80 space-y-4 text-left">
-            {[
-              'One point of coordination for home-care requirements',
-              'Support for different family members and care situations',
-              'Care options coordinated around your location and requirements',
-              'Clear discussion of availability, scope and pricing before confirmation',
-              'Convenient coordination through WhatsApp'
-            ].map((point, idx) => (
-              <div key={idx} className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-purple-700 shrink-0 mt-0.5" />
-                <span className="text-xs sm:text-sm font-bold text-slate-800 leading-normal">{point}</span>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
+      
 
       {/* 8. CTA SECTION */}
       <section className="py-14 bg-gradient-to-b from-purple-900 to-slate-900 text-white text-center">
@@ -558,46 +764,103 @@ export default function HomeNursingCarePage({ onOpenUploadModal }) {
       </section>
 
       {/* 9. FAQ SECTION */}
-      <section className="py-14 bg-slate-50 border-b border-slate-200">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          
-          <div className="text-center space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-purple-800 bg-purple-100 px-3 py-1 rounded-full inline-block">
-              Got Questions?
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Frequently Asked Questions
-            </h2>
-          </div>
 
-          <div className="space-y-3 text-left">
-            {FAQS.map((faq, idx) => {
-              const isOpen = openFaqIndex === idx;
-              return (
-                <div
-                  key={idx}
-                  className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs transition-all"
-                >
-                  <button
-                    onClick={() => toggleFaq(idx)}
-                    className="w-full p-4 flex items-center justify-between text-left text-xs sm:text-sm font-extrabold text-slate-900 hover:text-purple-900 cursor-pointer"
-                  >
-                    <span>{faq.q}</span>
-                    {isOpen ? <ChevronUp className="w-4 h-4 text-purple-700 shrink-0" /> : <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />}
-                  </button>
 
-                  {isOpen && (
-                    <div className="px-4 pb-4 text-xs text-slate-600 font-medium leading-relaxed border-t border-slate-100 pt-3 bg-slate-50/50">
-                      {faq.a}
-                    </div>
-                  )}
+
+
+     <section className="py-20 bg-gradient-to-b from-white via-slate-50/50 to-purple-50/20 border-b border-slate-200">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    
+    {/* Top Heading & Description */}
+    <div className="text-center max-w-3xl mx-auto space-y-3">
+      <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest px-3.5 py-1.5 rounded-full bg-purple-100 text-purple-900 border border-purple-200/80 shadow-xs">
+        <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse" />
+        Got Questions?
+      </span>
+      <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+        Frequently Asked <span className="text-purple-700">Questions</span>
+      </h2>
+      <p className="text-sm text-slate-600 font-medium leading-relaxed">
+        Find clear, straightforward answers regarding our home nursing care services, caregiver arrangements, scheduling flexibility, and clinical safety protocols.
+      </p>
+    </div>
+
+    {/* Bottom 5-5 Left & Right Column Layout */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+      
+      {/* Left Column: First 5 FAQs */}
+      <div className="space-y-3.5 text-left">
+        {FAQS.slice(0, 5).map((faq, idx) => {
+          const isOpen = openFaqIndex === idx;
+          return (
+            <div
+              key={idx}
+              className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.02)] ${
+                isOpen ? 'border-purple-300 shadow-[0_8px_30px_rgba(126,34,206,0.08)]' : 'border-slate-200/85 hover:border-purple-200'
+              }`}
+            >
+              <button
+                onClick={() => toggleFaq(idx)}
+                className="w-full p-5 flex items-center justify-between text-left text-xs sm:text-sm font-extrabold text-slate-900 hover:text-purple-900 cursor-pointer gap-4"
+              >
+                <span className="leading-snug">{faq.q}</span>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300 ${isOpen ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-500'}`}>
+                  {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </div>
-              );
-            })}
-          </div>
+              </button>
 
-        </div>
-      </section>
+              {isOpen && (
+                <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed border-t border-purple-50 pt-3 bg-purple-50/25">
+                  {faq.a}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Right Column: Remaining FAQs */}
+      <div className="space-y-3.5 text-left">
+        {FAQS.slice(5, 10).map((faq, sliceIdx) => {
+          const idx = sliceIdx + 5; // Offset index to keep state aligned with FAQS array
+          const isOpen = openFaqIndex === idx;
+          return (
+            <div
+              key={idx}
+              className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.02)] ${
+                isOpen ? 'border-purple-300 shadow-[0_8px_30px_rgba(126,34,206,0.08)]' : 'border-slate-200/85 hover:border-purple-200'
+              }`}
+            >
+              <button
+                onClick={() => toggleFaq(idx)}
+                className="w-full p-5 flex items-center justify-between text-left text-xs sm:text-sm font-extrabold text-slate-900 hover:text-purple-900 cursor-pointer gap-4"
+              >
+                <span className="leading-snug">{faq.q}</span>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300 ${isOpen ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-500'}`}>
+                  {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </div>
+              </button>
+
+              {isOpen && (
+                <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed border-t border-purple-50 pt-3 bg-purple-50/25">
+                  {faq.a}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+      
 
       {/* 10. TRUST & SAFETY */}
       <section className="py-10 bg-white">

@@ -61,6 +61,11 @@ export default function CitySearchSelect({ value, onChange, placeholder = "Searc
     return INDIAN_CITIES.some((c) => c.toLowerCase() === trimmed);
   }, [searchTerm]);
 
+  const isSelectedNonBengaluru = React.useMemo(() => {
+    const trimmed = searchTerm.trim().toLowerCase();
+    return trimmed.length > 0 && !trimmed.includes('bengaluru') && !trimmed.includes('bangalore');
+  }, [searchTerm]);
+
   return (
     <div ref={wrapperRef} className="relative w-full">
       <div className="relative flex items-center">
@@ -84,6 +89,13 @@ export default function CitySearchSelect({ value, onChange, placeholder = "Searc
         </button>
       </div>
 
+      {/* Operational City Notice for Non-Bengaluru choices */}
+      {isSelectedNonBengaluru && (
+        <p className="text-[10px] text-amber-800 font-semibold mt-1 px-1 flex items-center gap-1">
+          <span>📍 Live service is in Bengaluru. {searchTerm} requests are added to priority waitlist.</span>
+        </p>
+      )}
+
       {/* Floating Dropdown List */}
       {isOpen && (
         <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-purple-200 rounded-2xl shadow-xl max-h-60 overflow-y-auto py-1 animate-fadeIn divide-y divide-purple-50">
@@ -99,13 +111,14 @@ export default function CitySearchSelect({ value, onChange, placeholder = "Searc
                 <Plus className="w-3.5 h-3.5 text-purple-700 shrink-0" />
                 Use custom city: <strong className="text-purple-950 font-bold max-w-[200px] truncate">"{searchTerm.trim()}"</strong>
               </span>
-              <span className="text-[10px] text-purple-700 font-bold bg-purple-200/60 px-2 py-0.5 rounded-full shrink-0">Custom</span>
+              <span className="text-[10px] text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded-full shrink-0">Coming Soon</span>
             </button>
           )}
 
           {filteredCities.length > 0 ? (
             filteredCities.map((city, index) => {
               const isSelected = searchTerm.toLowerCase() === city.toLowerCase();
+              const isBangalore = city.toLowerCase().includes('bengaluru') || city.toLowerCase().includes('bangalore');
               return (
                 <button
                   key={index}
@@ -118,10 +131,18 @@ export default function CitySearchSelect({ value, onChange, placeholder = "Searc
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-                    {city}
+                    <MapPin className={`w-3.5 h-3.5 shrink-0 ${isBangalore ? 'text-purple-700' : 'text-slate-400'}`} />
+                    <span>{city}</span>
                   </span>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-purple-700 shrink-0" />}
+                  {isBangalore ? (
+                    <span className="text-[10px] text-emerald-800 font-black bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">
+                      Active Live
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded-full shrink-0">
+                      Coming Soon
+                    </span>
+                  )}
                 </button>
               );
             })

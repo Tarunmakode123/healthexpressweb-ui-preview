@@ -1,7 +1,7 @@
 // Centralized Configuration Constants for Health Express
 
-export const HEALTH_MANAGER_PHONE = import.meta.env.VITE_HEALTH_MANAGER_PHONE || '+918069000000';
-export const HEALTH_MANAGER_DISPLAY_PHONE = '+91 80690 00000';
+export const HEALTH_MANAGER_PHONE = import.meta.env.VITE_HEALTH_MANAGER_PHONE || '+917676558809';
+export const HEALTH_MANAGER_DISPLAY_PHONE = '+91 76765 58809';
 
 export const SERVICE_CATEGORIES = [
   { id: 'lab-tests', name: 'Lab Tests', slug: 'lab-tests', icon: 'FlaskConical', description: 'Blood tests, pathology, and home sample collection' },

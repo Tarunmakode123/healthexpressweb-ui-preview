@@ -85,8 +85,25 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="py-8 lg:py-12 bg-gradient-to-b from-white via-slate-50/50 to-white border-t border-slate-100 relative overflow-hidden" id="testimonials-section">
+    <section className="py-8 lg:py-12 bg-gradient-to-b from-white via-slate-50/50 to-white border-t border-slate-100 relative overflow-hidden font-serif" id="testimonials-section" style={{ fontFamily: 'serif' }}>
       
+      <style>{`
+        /* Strongly Highlighted Sharp Edge Review Card Box */
+        .review-card-box {
+          background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(100, 48, 158, 0.06) 100%);
+          border: 1.5px solid rgba(100, 48, 158, 0.28);
+          border-left: 5px solid #64309e;
+          border-top: 3px solid rgba(100, 48, 158, 0.4);
+          box-shadow: 0 10px 30px -4px rgba(100, 48, 158, 0.18);
+          transition: all 0.35s ease;
+        }
+        .review-card-box:hover {
+          box-shadow: 0 16px 38px -4px rgba(100, 48, 158, 0.3);
+          border-color: rgba(100, 48, 158, 0.6);
+          transform: translateY(-3px);
+        }
+      `}</style>
+
       {/* Subtle Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-purple-100/25 rounded-full blur-3xl pointer-events-none -z-10" />
 
@@ -96,17 +113,17 @@ export default function TestimonialsSection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-3 text-left max-w-2xl">
             <span 
-              className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full font-extrabold text-xs uppercase tracking-wider border"
-              style={{ backgroundColor: 'rgba(100, 48, 158, 0.05)', borderColor: 'rgba(100, 48, 158, 0.2)', color: '#64309e' }}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-none font-extrabold text-xs uppercase tracking-wider border font-serif"
+              style={{ backgroundColor: 'rgba(100, 48, 158, 0.05)', borderColor: 'rgba(100, 48, 158, 0.2)', color: '#64309e', fontFamily: 'serif' }}
             >
               <Sparkles className="w-3.5 h-3.5" style={{ color: '#64309e' }} />
               PATIENT REVIEWS & STORIES
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight font-serif" style={{ fontFamily: 'serif' }}>
               Trusted by thousands of <br />
-              <span style={{ color: '#64309e' }}>families in Bangalore</span>
+              <span style={{ color: '#64309e', fontFamily: 'serif' }}>families in Bangalore</span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium">
+            <p className="text-xs sm:text-sm text-slate-600 font-medium font-serif" style={{ fontFamily: 'serif' }}>
               Read genuine feedback from patients who experience fast home collection, 100% clear results, and dedicated care every single day.
             </p>
           </div>
@@ -115,14 +132,14 @@ export default function TestimonialsSection() {
           <div className="flex items-center gap-2 self-start md:self-auto">
             <button 
               onClick={() => scroll('left')}
-              className="w-10 h-10 rounded-2xl border-2 border-slate-200 bg-white hover:bg-purple-50 flex items-center justify-center text-slate-700 transition-colors shadow-xs cursor-pointer"
+              className="w-10 h-10 rounded-none border-2 border-slate-200 bg-white hover:bg-purple-50 flex items-center justify-center text-slate-700 transition-colors shadow-xs cursor-pointer"
               title="Scroll Left"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button 
               onClick={() => scroll('right')}
-              className="w-10 h-10 rounded-2xl border-2 border-slate-200 bg-white hover:bg-purple-50 flex items-center justify-center text-slate-700 transition-colors shadow-xs cursor-pointer"
+              className="w-10 h-10 rounded-none border-2 border-slate-200 bg-white hover:bg-purple-50 flex items-center justify-center text-slate-700 transition-colors shadow-xs cursor-pointer"
               title="Scroll Right"
             >
               <ChevronRight className="w-5 h-5" />
@@ -139,7 +156,8 @@ export default function TestimonialsSection() {
           {INDIAN_REVIEWS.map((item, idx) => (
             <div 
               key={idx}
-              className="w-[300px] sm:w-[340px] shrink-0 bg-white rounded-3xl p-6 border-2 border-slate-200/80 hover:border-purple-300 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative text-left"
+              className="w-[300px] sm:w-[340px] shrink-0 review-card-box rounded-none p-6 flex flex-col justify-between group relative text-left font-serif"
+              style={{ fontFamily: 'serif' }}
             >
               {/* Top Quote Icon & Stars */}
               <div className="space-y-4">
@@ -149,24 +167,24 @@ export default function TestimonialsSection() {
                       <Star key={i} className="w-4 h-4 fill-[#64309e] text-[#64309e]" />
                     ))}
                   </div>
-                  <Quote className="w-8 h-8 text-purple-200/60 group-hover:text-purple-300 transition-colors" />
+                  <Quote className="w-8 h-8 text-purple-300/60 group-hover:text-purple-400 transition-colors" />
                 </div>
 
-                <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed font-serif" style={{ fontFamily: 'serif' }}>
                   "{item.review}"
                 </p>
               </div>
 
               {/* Bottom User Info */}
-              <div className="pt-4 mt-6 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-4 mt-6 border-t border-purple-100 flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-black text-slate-900 group-hover:text-purple-950 transition-colors flex items-center gap-1.5">
+                  <h4 className="text-sm font-black text-slate-900 group-hover:text-purple-950 transition-colors flex items-center gap-1.5 font-serif" style={{ fontFamily: 'serif' }}>
                     {item.name}
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline shrink-0" />
                   </h4>
-                  <p className="text-[11px] text-slate-500 font-semibold">{item.location}</p>
+                  <p className="text-[11px] text-slate-500 font-semibold font-serif" style={{ fontFamily: 'serif' }}>{item.location}</p>
                 </div>
-                <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100">
+                <span className="text-[10px] font-bold text-slate-500 bg-white px-2.5 py-1 rounded-none border border-purple-100 shadow-2xs font-serif" style={{ fontFamily: 'serif' }}>
                   {item.date}
                 </span>
               </div>

@@ -10,26 +10,33 @@ function getSessionId() {
   return sid;
 }
 
-// In-memory deduplication cache to prevent duplicate events on React re-renders
-const loggedEventsCache = new Set();
+// In-memory deduplication cache map (key -> timestamp) to prevent duplicate event logging
+const loggedEventsCache = new Map();
 
 /**
- * Log non-PII user interaction & customer activity events to Supabase database.
- * Completely non-blocking and fail-safe (main app flow will never crash if logging fails).
+ * Log user interaction & customer activity events to Supabase database.
+ * Completely non-blocking, deduplicated, and fail-safe.
  */
 export async function logAnalyticsEvent(eventType, { pagePath = null, metadata = {}, userId = null, patientId = null, deduplicate = false } = {}) {
   if (!eventType) return;
 
   const currentPath = pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/');
-
-  if (deduplicate) {
-    const cacheKey = `${eventType}_${currentPath}_${JSON.stringify(metadata)}`;
-    if (loggedEventsCache.has(cacheKey)) return;
-    loggedEventsCache.add(cacheKey);
-    setTimeout(() => loggedEventsCache.delete(cacheKey), 3000); // 3s deduplication window
-  }
-
   const session_id = getSessionId();
+
+  // Automatic deduplication for PAGE_VIEW and LOGIN_SUCCESS to prevent React StrictMode & re-render duplicates
+  const isAutoDeduplicated = deduplicate || eventType === 'PAGE_VIEW' || eventType === 'LOGIN_SUCCESS';
+
+  if (isAutoDeduplicated) {
+    const cacheKey = `${eventType}_${session_id}_${currentPath}_${JSON.stringify(metadata)}`;
+    const lastLoggedAt = loggedEventsCache.get(cacheKey);
+    const now = Date.now();
+
+    // 10-second deduplication threshold
+    if (lastLoggedAt && (now - lastLoggedAt) < 10000) {
+      return;
+    }
+    loggedEventsCache.set(cacheKey, now);
+  }
 
   // Automatically attach authenticated user_id if logged in
   let currentUserId = userId;
@@ -38,7 +45,7 @@ export async function logAnalyticsEvent(eventType, { pagePath = null, metadata =
       const { data: { session } } = await supabase.auth.getSession();
       currentUserId = session?.user?.id || null;
     } catch (e) {
-      // Ignore auth fetch failure
+      // Non-blocking
     }
   }
 

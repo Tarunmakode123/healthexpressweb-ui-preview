@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stethoscope, Video, MessageSquare, Clock, ShieldCheck, Sparkles, Send, CheckCircle2, ArrowRight, AlertCircle, Phone, MapPin } from 'lucide-react';
+import { Stethoscope, Video, MessageSquare, Clock, ShieldCheck, Sparkles, Send, CheckCircle2, ArrowRight, AlertCircle, Phone, MapPin, Award, Star } from 'lucide-react';
 import { openWhatsApp, DEFAULT_MESSAGES } from '../utils/whatsapp';
 
 export default function TelemedicinePage() {
@@ -13,9 +13,20 @@ export default function TelemedicinePage() {
     setSubmitted(true);
   };
 
+  const doctors = [
+    { name: "Dr. Ananya Sharma", designation: "Senior General Physician", degree: "MBBS, MD - General Medicine", image: "/images/services/drprofile.png" },
+    { name: "Dr. Priya Deshmukh", designation: "Consultant Gynecologist", degree: "MBBS, MS - Gynaecology", image: "/images/services/drprofile.png" },
+    { name: "Dr. Neha Verma", designation: "Pediatrician & Child Care", degree: "MBBS, MD - Pediatrics", image: "/images/services/drprofile.png" },
+    { name: "Dr. Pooja Iyer", designation: "Chief Dermatologist", degree: "MBBS, MD - Dermatology", image: "/images/services/drprofile.png" },
+    { name: "Dr. Ritu Saxena", designation: "Senior Cardiologist", degree: "MBBS, DM - Cardiology", image: "/images/services/drprofile.png" },
+    { name: "Dr. Sneha Pillai", designation: "Clinical Endocrinologist", degree: "MBBS, DNB - Endocrinology", image: "/images/services/drprofile.png" },
+    { name: "Dr. Kavita Menon", designation: "Neurology Specialist", degree: "MBBS, DM - Neurology", image: "/images/services/drprofile.png" },
+    { name: "Dr. Meenakshi Roy", designation: "Senior Ophthalmologist", degree: "MBBS, MS - Ophthalmology", image: "/images/services/drprofile.png" }
+  ];
+
   return (
     <div className="py-10 md:py-16 bg-white min-h-[85vh]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         
         {/* Header Banner */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
@@ -111,20 +122,16 @@ export default function TelemedicinePage() {
           {/* RIGHT SIDE: PROMINENT "COMING SOON" HERO CARD */}
           <div className="lg:col-span-6 space-y-6">
             
-            {/* Primary "Coming Soon" Container */}
             <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-purple-850 to-indigo-950 text-white p-8 sm:p-10 rounded-3xl shadow-xl border border-purple-700/50 space-y-6">
               
-              {/* Background Accent Glow */}
               <div className="absolute -right-12 -top-12 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute -left-12 -bottom-12 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
-              {/* Status Badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400 text-purple-950 text-xs font-black uppercase tracking-wider shadow-sm">
                 <Sparkles className="w-4 h-4 text-purple-950" />
                 <span>Coming Soon</span>
               </div>
 
-              {/* Title & Headline */}
               <div className="space-y-2">
                 <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
                   Instant Video Consultations & Live Doctor Booking
@@ -134,7 +141,6 @@ export default function TelemedicinePage() {
                 </p>
               </div>
 
-              {/* Feature Checklist */}
               <div className="space-y-2.5 pt-2 border-t border-purple-800/80">
                 <div className="flex items-center gap-2 text-xs font-bold text-purple-100">
                   <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
@@ -150,8 +156,7 @@ export default function TelemedicinePage() {
                 </div>
               </div>
 
-              {/* Early Access / Contact Form */}
-              <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/15 space-y-3">
+              <div className="bg-white/15 backdrop-blur-md p-5 rounded-2xl border border-white/20 space-y-3">
                 <div className="text-xs font-black text-white flex items-center justify-between">
                   <span>Pre-Register for Telemedicine Access</span>
                   <span className="text-[10px] px-2 py-0.5 rounded-md bg-purple-700 text-purple-100 font-bold">Priority List</span>
@@ -192,6 +197,69 @@ export default function TelemedicinePage() {
 
           </div>
 
+        </div>
+
+        {/* DOCTORS PROFILE SECTION */}
+        <div className="pt-12 border-t border-slate-200">
+          <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-purple-100 text-purple-900 border border-purple-200 text-xs font-extrabold uppercase tracking-wider">
+              <Stethoscope className="w-4 h-4 text-purple-700" />
+              <span>Expert Medical Team</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              Meet Our Experienced Specialists
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 font-medium">
+              Consult with top-rated medical professionals dedicated to providing compassionate and expert healthcare for you and your family.
+            </p>
+          </div>
+
+          {/* Profiles Grid: 4 per row (Total 8 profiles across 2 rows) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {doctors.map((doc, index) => (
+              <div 
+                key={index}
+                className="bg-white rounded-2xl border border-purple-100 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group"
+              >
+                <div className="relative w-full h-56 bg-purple-50 overflow-hidden">
+                  <img 
+                    src={doc.image} 
+                    alt={doc.name} 
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[11px] font-bold text-purple-900 flex items-center gap-1 shadow-sm rounded-lg">
+                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                    <span>4.9</span>
+                  </div>
+                </div>
+
+                <div className="p-5 flex flex-col flex-grow text-left space-y-2">
+                  <span className="text-xs font-bold text-purple-700 uppercase tracking-wide">
+                    {doc.designation}
+                  </span>
+
+                  <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">
+                    {doc.name}
+                  </h3>
+
+                  <p className="text-xs font-semibold text-slate-600 flex items-center gap-1.5 pt-1 border-t border-slate-100">
+                    <Award className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                    <span>{doc.degree}</span>
+                  </p>
+
+                  <div className="pt-4 mt-auto">
+                    <button
+                      onClick={() => openWhatsApp(`Hello Health Express, I would like to book a consultation with ${doc.name} (${doc.designation}).`)}
+                      className="w-full py-2.5 px-3 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer rounded-xl"
+                    >
+                      <span>Book Consultation</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>

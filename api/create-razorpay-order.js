@@ -13,7 +13,7 @@ export async function handleCreateRazorpayOrder(reqBody) {
   const { items, promoCode, coinsToUse, walletBalance, walletSettings, customerName, customerPhone, customerEmail } = reqBody || {};
 
   // 1. Validate Cart & calculate trusted amount on server (including promo discount & coin validation)
-  const cartValidation = validateCartTotal(items, promoCode, coinsToUse, walletBalance, walletSettings);
+  const cartValidation = await validateCartTotal(items, promoCode, coinsToUse, walletBalance, walletSettings);
   if (!cartValidation.isValid) {
     return {
       status: 400,

@@ -38,7 +38,7 @@ export default function QuickHealthChecks({ onOpenUploadModal }) {
   };
 
   return (
-    <section className="py-1 md:py-1 bg-white relative overflow-hidden">
+    <section className="py-12 md:py-16 bg-white relative overflow-hidden">
       
       {/* Background Subtle Ambient Glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-purple-50/50 rounded-full blur-3xl pointer-events-none -z-10" />

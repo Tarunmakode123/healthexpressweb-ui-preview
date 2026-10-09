@@ -1,5 +1,8 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 
+// Backend API Base URL for Hostinger Static Deployment (defaults to relative URL if omitted)
+const API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL) || '';
+
 /**
  * DEMO / FALLBACK PROMO CODES
  * Used when operating in local development demo mode without Supabase
@@ -191,7 +194,7 @@ export async function validatePromoCode({ promoCode, cartSubtotal, cartItems = [
 
   // Try calling serverless API endpoint first
   try {
-    const response = await fetch('/api/validate-promo', {
+    const response = await fetch(`${API_BASE_URL}/api/validate-promo`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ promoCode: normalizedCode, cartItems, cartSubtotal })

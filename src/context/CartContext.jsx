@@ -29,7 +29,7 @@ export function CartProvider({ children }) {
   const [availablePromos, setAvailablePromos] = useState([]);
 
   // HEALTH COINS STATES
-  const [walletBalance, setWalletBalance] = useState(1000);
+  const [walletBalance, setWalletBalance] = useState(0);
   const [walletSettings, setWalletSettings] = useState(DEFAULT_WALLET_SETTINGS);
   const [coinsRequested, setCoinsRequested] = useState(0);
   const [coinDiscount, setCoinDiscount] = useState(0);
@@ -64,11 +64,11 @@ export function CartProvider({ children }) {
     if (user?.id) {
       fetchWalletData(user.id).then((res) => {
         if (res.success) {
-          setWalletBalance(res.balance);
+          setWalletBalance(typeof res.balance === 'number' ? res.balance : 0);
         }
       }).catch(() => {});
     } else {
-      setWalletBalance(1000); // Demo default
+      setWalletBalance(0);
     }
   }, [user?.id]);
 
@@ -78,7 +78,7 @@ export function CartProvider({ children }) {
   const originalSubtotal = cartItems.reduce((acc, item) => acc + (item.originalPrice || item.price * 1.3) * item.quantity, 0);
   const totalSavings = Math.max(0, originalSubtotal - subtotal);
 
-  // Re-calculate promo discount whenever subtotal changes
+  // Re-calculate promo discount whenever subtotal, appliedPromo, or cartItems change
   useEffect(() => {
     if (appliedPromo) {
       if (subtotal <= 0) {
@@ -86,20 +86,26 @@ export function CartProvider({ children }) {
         setPromoDiscount(0);
         setPromoError(null);
       } else {
-        const updatedDiscount = calculateDiscountAmount(subtotal, appliedPromo);
-        if (appliedPromo.min_order_amount && subtotal < appliedPromo.min_order_amount) {
-          const needed = appliedPromo.min_order_amount - subtotal;
+        const calcRes = calculateDiscountAmount(subtotal, appliedPromo, cartItems);
+        const numericDiscount = typeof calcRes === 'number' ? calcRes : (calcRes?.discountAmount || 0);
+
+        if (!calcRes?.isScopeMatched || (calcRes?.eligibleSubtotal !== undefined && calcRes.eligibleSubtotal <= 0)) {
+          const scopeName = appliedPromo.applicable_scope === 'categories' ? 'the selected category' : 'the items in your cart';
+          setPromoError(`Promo code ${appliedPromo.code} is not applicable to ${scopeName}.`);
+          setPromoDiscount(0);
+        } else if (appliedPromo.min_order_amount && calcRes.eligibleSubtotal < appliedPromo.min_order_amount) {
+          const needed = appliedPromo.min_order_amount - calcRes.eligibleSubtotal;
           setPromoError(`Add ₹${needed} more to keep using ${appliedPromo.code}.`);
           setPromoDiscount(0);
         } else {
-          setPromoDiscount(updatedDiscount);
+          setPromoDiscount(numericDiscount);
           setPromoError(null);
         }
       }
     } else {
       setPromoDiscount(0);
     }
-  }, [subtotal, appliedPromo]);
+  }, [subtotal, appliedPromo, cartItems]);
 
   // Re-calculate coins discount whenever subtotal, promo, or requested coins change
   useEffect(() => {
@@ -245,22 +251,30 @@ export function CartProvider({ children }) {
           setCoinDiscount(0);
         }
 
+        const numericDiscount = typeof res.discount_amount === 'number'
+          ? res.discount_amount
+          : (res.discount_amount?.discountAmount || 0);
+
         setAppliedPromo({
           id: res.promo_id,
           code: res.code,
           discount_type: res.discount_type,
           discount_value: res.discount_value,
           max_discount: res.max_discount,
-          min_order_amount: res.min_order_amount
+          min_order_amount: res.min_order_amount,
+          applicable_scope: res.applicable_scope || 'all',
+          applicable_categories: res.applicable_categories || [],
+          applicable_items: res.applicable_items || []
         });
-        setPromoDiscount(res.discount_amount);
+        setPromoDiscount(numericDiscount);
         setPromoError(null);
         setPromoLoading(false);
-        return { success: true, message: res.message, discount: res.discount_amount };
+        return { success: true, message: res.message, discount: numericDiscount };
       } else {
-        setPromoError(res.message || "That promo code isn't valid.");
+        const errorMsg = typeof res.message === 'string' ? res.message : "That promo code isn't valid.";
+        setPromoError(errorMsg);
         setPromoLoading(false);
-        return { success: false, error: res.message };
+        return { success: false, error: errorMsg };
       }
     } catch (err) {
       console.error('Apply promo code exception:', err);
@@ -282,7 +296,9 @@ export function CartProvider({ children }) {
     setCoinsError(null);
     const targetCoins = amount !== undefined ? Number(amount) : Math.min(walletBalance, walletSettings.maximum_coins_per_order || 500);
 
-    if (promoDiscount > 0 && !walletSettings.allow_stacking_with_promo) {
+    const numericPromoDiscount = typeof promoDiscount === 'number' ? promoDiscount : (promoDiscount?.discountAmount || 0);
+
+    if (numericPromoDiscount > 0 && !walletSettings.allow_stacking_with_promo) {
       setCoinsError('Health Coins cannot be combined with Promo Codes.');
       return { success: false, error: 'Health Coins cannot be combined with Promo Codes.' };
     }
@@ -292,7 +308,7 @@ export function CartProvider({ children }) {
       coinsRequested: targetCoins,
       walletBalance,
       settings: walletSettings,
-      promoDiscount,
+      promoDiscount: numericPromoDiscount,
       cartItems
     });
 
@@ -326,7 +342,9 @@ export function CartProvider({ children }) {
   const closeCart = () => setIsCartOpen(false);
   const toggleCart = () => setIsCartOpen((prev) => !prev);
 
-  const finalPayable = Math.max(0, subtotal - promoDiscount - coinDiscount);
+  const numericPromoDiscount = typeof promoDiscount === 'number' ? promoDiscount : (promoDiscount?.discountAmount || 0);
+  const numericCoinDiscount = typeof coinDiscount === 'number' ? coinDiscount : 0;
+  const finalPayable = Math.max(0, subtotal - numericPromoDiscount - numericCoinDiscount);
 
   return (
     <CartContext.Provider
