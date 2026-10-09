@@ -45,8 +45,25 @@ export default function WhyHealthExpressSection() {
   ];
 
   return (
-    <section className="py-16 lg:py-6 bg-slate-50 border-t border-purple-100/60 relative overflow-hidden" id="why-choose-us">
+    <section className="py-16 lg:py-6 bg-slate-50 border-t border-purple-100/60 relative overflow-hidden font-serif" id="why-choose-us" style={{ fontFamily: 'serif' }}>
       
+      <style>{`
+        /* Strongly Highlighted Sharp Edge Advantage Box Style */
+        .advantage-card-box {
+          background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(97, 44, 156, 0.06) 100%);
+          border: 1.5px solid rgba(97, 44, 156, 0.28);
+          border-left: 5px solid #612c9c;
+          border-top: 3px solid rgba(97, 44, 156, 0.4);
+          box-shadow: 0 10px 30px -4px rgba(97, 44, 156, 0.18);
+          transition: all 0.35s ease;
+        }
+        .advantage-card-box:hover {
+          box-shadow: 0 16px 38px -4px rgba(97, 44, 156, 0.3);
+          border-color: rgba(97, 44, 156, 0.6);
+          transform: translateY(-3px);
+        }
+      `}</style>
+
       {/* Absolute Full Section Background Video Layer with Left Fade */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none flex justify-end">
         <div className="w-full lg:w-[65%] h-full relative">
@@ -80,43 +97,44 @@ export default function WhyHealthExpressSection() {
             {/* Section Header */}
             <div className="space-y-3">
               <span 
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider border shadow-2xs"
-                style={{ backgroundColor: 'rgba(97, 44, 156, 0.08)', borderColor: 'rgba(97, 44, 156, 0.25)', color: '#612c9c' }}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-none font-extrabold text-xs uppercase tracking-wider border shadow-2xs font-serif"
+                style={{ backgroundColor: 'rgba(97, 44, 156, 0.08)', borderColor: 'rgba(97, 44, 156, 0.25)', color: '#612c9c', fontFamily: 'serif' }}
               >
                 <Sparkles className="w-3.5 h-3.5" style={{ color: '#612c9c' }} />
                 THE HEALTH EXPRESS ADVANTAGE
               </span>
-              <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-[1.15]">
-                Why Choose <span style={{ color: '#612c9c' }}>Health Express?</span>
+              <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-[1.15] font-serif" style={{ fontFamily: 'serif' }}>
+                Why Choose <span style={{ color: '#612c9c', fontFamily: 'serif' }}>Health Express?</span>
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 font-medium max-w-xl leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-600 font-medium max-w-xl leading-relaxed font-serif" style={{ fontFamily: 'serif' }}>
                 Experience seamless diagnostics and professional care built around your health, convenience, and absolute trust.
               </p>
             </div>
 
-            {/* 6 Boxes in 3x2 Grid */}
+            {/* 6 Boxes in 3x2 Grid with Sharp Edges */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {advantages.map((item, idx) => (
                 <div 
                   key={idx}
-                  className="bg-white/95 backdrop-blur-xs hover:bg-purple-50/40 border-2 border-slate-200/80 hover:border-purple-400 rounded-2xl p-4 sm:p-4.5 flex flex-col justify-between transition-all duration-300 group shadow-sm hover:shadow-md"
+                  className="advantage-card-box rounded-none p-4 sm:p-4.5 flex flex-col justify-between group font-serif"
+                  style={{ fontFamily: 'serif' }}
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span 
-                        className="text-[11px] font-mono font-extrabold px-2.5 py-0.5 rounded border shadow-2xs"
-                        style={{ backgroundColor: 'rgba(97, 44, 156, 0.06)', borderColor: 'rgba(97, 44, 156, 0.2)', color: '#612c9c' }}
+                        className="text-[11px] font-mono font-extrabold px-2.5 py-0.5 rounded-none border shadow-2xs bg-white font-serif"
+                        style={{ borderColor: 'rgba(97, 44, 156, 0.25)', color: '#612c9c', fontFamily: 'serif' }}
                       >
                         {item.num}
                       </span>
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     </div>
                     
-                    <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 group-hover:text-purple-950 transition-colors line-clamp-1">
+                    <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 group-hover:text-purple-950 transition-colors line-clamp-1 font-serif" style={{ fontFamily: 'serif' }}>
                       {item.title}
                     </h3>
                     
-                    <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed line-clamp-2">
+                    <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed line-clamp-2 font-serif" style={{ fontFamily: 'serif' }}>
                       {item.desc}
                     </p>
                   </div>

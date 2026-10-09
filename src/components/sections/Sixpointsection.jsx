@@ -41,9 +41,9 @@ export default function ExpertiseSection() {
   ];
 
   return (
-    <section className="py-16 lg:py-15 bg-gradient-to-b from-white via-slate-50/60 to-white relative overflow-hidden" id="expertise-section">
+    <section className="py-16 lg:py-15 bg-gradient-to-b from-white via-slate-50/60 to-white relative overflow-hidden font-serif" id="expertise-section" style={{ fontFamily: 'serif' }}>
       
-      {/* Custom Keyframe Animations for Subtle Entry Effect */}
+      {/* Custom Animations & Highly Prominent Sharp Edge Purple Highlight Box Style */}
       <style>{`
         @keyframes fadeInUp {
           from {
@@ -65,6 +65,20 @@ export default function ExpertiseSection() {
         .animate-float {
           animation: floatSlow 4s ease-in-out infinite;
         }
+        /* Strongly Highlighted Sharp Edge Expertise Card Box */
+        .expertise-card-box {
+          background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(97, 44, 156, 0.06) 100%);
+          border: 1.5px solid rgba(97, 44, 156, 0.28);
+          border-left: 5px solid #612c9c;
+          border-top: 3px solid rgba(97, 44, 156, 0.4);
+          box-shadow: 0 10px 30px -4px rgba(97, 44, 156, 0.18);
+          transition: all 0.35s ease;
+        }
+        .expertise-card-box:hover {
+          box-shadow: 0 16px 38px -4px rgba(97, 44, 156, 0.3);
+          border-color: rgba(97, 44, 156, 0.6);
+          transform: translateY(-3px);
+        }
       `}</style>
 
       {/* Subtle Background Glow */}
@@ -75,17 +89,17 @@ export default function ExpertiseSection() {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3 animate-fade-in-up">
           <span 
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-widest border shadow-2xs"
-            style={{ backgroundColor: 'rgba(97, 44, 156, 0.06)', borderColor: 'rgba(97, 44, 156, 0.25)', color: '#612c9c' }}
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-none font-extrabold text-xs uppercase tracking-widest border shadow-2xs font-serif"
+            style={{ backgroundColor: 'rgba(97, 44, 156, 0.06)', borderColor: 'rgba(97, 44, 156, 0.25)', color: '#612c9c', fontFamily: 'serif' }}
           >
             <Sparkles className="w-3.5 h-3.5" style={{ color: '#612c9c' }} />
             Our Best Expertise
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.15]">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.15] font-serif" style={{ fontFamily: 'serif' }}>
             Our Best Expertise To Get <br />
-            <span style={{ color: '#612c9c' }}>100% Clear & Accurate Results</span>
+            <span style={{ color: '#612c9c', fontFamily: 'serif' }}>100% Clear & Accurate Results</span>
           </h2>
-          <p className="text-sm sm:text-base text-slate-600 font-medium max-w-xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-600 font-medium max-w-xl mx-auto leading-relaxed font-serif" style={{ fontFamily: 'serif' }}>
             From safe doorstep sample collection to final expert review, our specialized workflow ensures absolute clarity and trust.
           </p>
         </div>
@@ -100,22 +114,22 @@ export default function ExpertiseSection() {
               return (
                 <div 
                   key={idx}
-                  className="bg-white rounded-2xl p-5 sm:p-6 border-2 border-slate-200/80 hover:border-purple-400 shadow-sm hover:shadow-lg transition-all duration-300 group space-y-2.5 animate-fade-in-up"
-                  style={{ animationDelay: `${idx * 0.15}s` }}
+                  className="expertise-card-box rounded-none p-5 sm:p-6 space-y-2.5 animate-fade-in-up group font-serif"
+                  style={{ animationDelay: `${idx * 0.15}s`, fontFamily: 'serif' }}
                 >
                   <div className="flex items-center justify-between">
                     <div 
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md group-hover:scale-110 transition-transform duration-300"
+                      className="w-10 h-10 rounded-none flex items-center justify-center text-white shrink-0 shadow-md group-hover:scale-110 transition-transform duration-300"
                       style={{ backgroundColor: '#612c9c' }}
                     >
                       <IconComp className="w-5 h-5 text-white" />
                     </div>
                     <CheckCircle className="w-4 h-4 text-emerald-600" />
                   </div>
-                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-purple-950 transition-colors">
+                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-purple-950 transition-colors font-serif" style={{ fontFamily: 'serif' }}>
                     {item.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed font-serif" style={{ fontFamily: 'serif' }}>
                     {item.desc}
                   </p>
                 </div>
@@ -142,22 +156,22 @@ export default function ExpertiseSection() {
               return (
                 <div 
                   key={idx}
-                  className="bg-white rounded-2xl p-5 sm:p-6 border-2 border-slate-200/80 hover:border-purple-400 shadow-sm hover:shadow-lg transition-all duration-300 group space-y-2.5 animate-fade-in-up"
-                  style={{ animationDelay: `${(idx + 3) * 0.15}s` }}
+                  className="expertise-card-box rounded-none p-5 sm:p-6 space-y-2.5 animate-fade-in-up group font-serif"
+                  style={{ animationDelay: `${(idx + 3) * 0.15}s`, fontFamily: 'serif' }}
                 >
                   <div className="flex items-center justify-between">
                     <div 
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md group-hover:scale-110 transition-transform duration-300"
+                      className="w-10 h-10 rounded-none flex items-center justify-center text-white shrink-0 shadow-md group-hover:scale-110 transition-transform duration-300"
                       style={{ backgroundColor: '#612c9c' }}
                     >
                       <IconComp className="w-5 h-5 text-white" />
                     </div>
                     <CheckCircle className="w-4 h-4 text-emerald-600" />
                   </div>
-                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-purple-950 transition-colors">
+                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-purple-950 transition-colors font-serif" style={{ fontFamily: 'serif' }}>
                     {item.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed font-serif" style={{ fontFamily: 'serif' }}>
                     {item.desc}
                   </p>
                 </div>
